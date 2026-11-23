@@ -1015,7 +1015,7 @@ NOTIFY pgrst, 'reload schema';</pre>
 
         <div>
           <label class="block font-semibold text-slate-700 mb-1">3. Chi phí thuê văn phòng (VNĐ/tháng, đã gồm VAT)</label>
-          <input id="vpRentInput" type="number" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
+          <input id="vpRentInput" type="text" inputmode="numeric" oninput="formatMoneyInput(this)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
         </div>
 
         <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
@@ -1042,7 +1042,7 @@ NOTIFY pgrst, 'reload schema';</pre>
         </div>
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Tiền thuê VP mặc định (VNĐ)</label>
-          <input id="newMonthVpInput" type="number" value="5250000" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold" />
+          <input id="newMonthVpInput" type="text" inputmode="numeric" value="5.250.000" oninput="formatMoneyInput(this)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold" />
         </div>
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Trạng thái ban đầu</label>
@@ -1098,7 +1098,7 @@ NOTIFY pgrst, 'reload schema';</pre>
           </div>
           <div>
             <label class="block font-semibold text-slate-700 mb-1">Thành tiền (VNĐ)</label>
-            <input id="ncAmountInput" type="number" required value="530000" class="w-full min-h-[42px] px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
+            <input id="ncAmountInput" type="text" inputmode="numeric" required value="530.000" oninput="formatMoneyInput(this)" class="w-full min-h-[42px] px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
           </div>
         </div>
         <div>
@@ -1141,7 +1141,7 @@ NOTIFY pgrst, 'reload schema';</pre>
               class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600" />
           </div>
           <div class="sm:col-span-2">
-            <input id="ncTaskDefaultRateInput" type="number" min="0" step="1000" value="530000" placeholder="Đơn giá (VNĐ)"
+            <input id="ncTaskDefaultRateInput" type="text" inputmode="numeric" value="530.000" oninput="formatMoneyInput(this)" placeholder="Đơn giá (VNĐ)"
               class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-600" />
           </div>
         </div>
@@ -1215,15 +1215,15 @@ NOTIFY pgrst, 'reload schema';</pre>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 p-3 rounded-xl bg-teal-50/50 border border-teal-200/80">
           <div>
             <label class="block text-[11px] font-semibold text-slate-700 mb-1">Phụ cấp (VNĐ)</label>
-            <input id="xeAllowanceInput" type="number" value="0" oninput="updateXeCalcPreview()" class="w-full min-h-[38px] px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg font-semibold" />
+            <input id="xeAllowanceInput" type="text" inputmode="numeric" value="0" oninput="formatMoneyInput(this); updateXeCalcPreview()" class="w-full min-h-[38px] px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg font-semibold" />
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-slate-700 mb-1">Tiền tạm ứng (VNĐ)</label>
-            <input id="xeAdvanceInput" type="number" value="0" oninput="updateXeCalcPreview()" class="w-full min-h-[38px] px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg font-semibold" />
+            <input id="xeAdvanceInput" type="text" inputmode="numeric" value="0" oninput="formatMoneyInput(this); updateXeCalcPreview()" class="w-full min-h-[38px] px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg font-semibold" />
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-slate-700 mb-1">Phí cầu đường (VNĐ)</label>
-            <input id="xeTollInput" type="number" value="0" oninput="updateXeCalcPreview()" class="w-full min-h-[38px] px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg font-semibold" />
+            <input id="xeTollInput" type="text" inputmode="numeric" value="0" oninput="formatMoneyInput(this); updateXeCalcPreview()" class="w-full min-h-[38px] px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg font-semibold" />
           </div>
         </div>
 
@@ -1293,7 +1293,7 @@ NOTIFY pgrst, 'reload schema';</pre>
           </div>
           <div>
             <label class="block font-semibold text-slate-700 mb-1">Đơn giá ban đầu (VNĐ)</label>
-            <input id="assetRateInput" type="number" required value="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
+            <input id="assetRateInput" type="text" inputmode="numeric" required value="0" oninput="formatMoneyInput(this)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
           </div>
         </div>
         <div>
@@ -2314,8 +2314,54 @@ NOTIFY pgrst, 'reload schema';</pre>
         .replace(/"/g, '&quot;');
     }
 
-    function formatVND(num) {
-      return Math.round(Number(num || 0)).toLocaleString('vi-VN') + ' đ';
+    function formatNumberVN(num, maxDecimals = 2) {
+      const val = Number(num || 0);
+      if (!Number.isFinite(val)) return '0';
+      return val.toLocaleString('vi-VN', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: maxDecimals
+      });
+    }
+
+    function formatVND(num, decimals = 0) {
+      const val = Number(num || 0);
+      if (!Number.isFinite(val)) return '0 đ';
+      const normalized = decimals > 0 ? val : Math.round(val);
+      return normalized.toLocaleString('vi-VN', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: decimals
+      }) + ' đ';
+    }
+
+    function parseMoneyVN(raw) {
+      if (typeof raw === 'number') return Number.isFinite(raw) ? raw : 0;
+      const str = String(raw ?? '').trim();
+      if (!str) return 0;
+      // Chuẩn Việt Nam: dấu "." là phân tách hàng nghìn, dấu "," là phần thập phân
+      const normalized = str.replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '');
+      const n = parseFloat(normalized);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function formatMoneyInput(el) {
+      if (!el) return;
+      let raw = String(el.value || '');
+      const hasComma = raw.includes(',');
+      let [intPart, decPart] = raw.split(',');
+      intPart = intPart.replace(/\D/g, '');
+      const formattedInt = intPart ? Number(intPart).toLocaleString('vi-VN') : (hasComma ? '0' : '');
+      if (hasComma) {
+        decPart = (decPart || '').replace(/\D/g, '').slice(0, 4);
+        el.value = `${formattedInt},${decPart}`;
+      } else {
+        el.value = formattedInt;
+      }
+    }
+
+    function setMoneyInputValue(id, amount) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = formatNumberVN(amount, 2);
     }
 
     function formatDateVN(isoOrStr) {
@@ -2898,7 +2944,7 @@ NOTIFY pgrst, 'reload schema';</pre>
       document.getElementById('elecVatInput').value = mObj.elecVat ?? 8;
       document.getElementById('cleanTimesInput').value = mObj.cleanTimes || 0;
       document.getElementById('cleanRateInput').value = mObj.cleanRate || 700000;
-      document.getElementById('vpRentInput').value = mObj.vp || 0;
+      setMoneyInputValue('vpRentInput', mObj.vp || 0);
 
       updateMonthCalcPreview();
       openModal('monthModal');
@@ -2919,11 +2965,11 @@ NOTIFY pgrst, 'reload schema';</pre>
       const rate = Number(document.getElementById('elecRateInput').value || 0);
       const vat = Number(document.getElementById('elecVatInput').value || 0);
       const calc = calcMonthElectricity({ elecStart: s, elecEnd: e, elecRate: rate, elecVat: vat });
-      document.getElementById('elecPreviewText').textContent = `Tiêu thụ: ${calc.kwh} kWh × ${rate.toLocaleString('vi-VN')}đ + VAT ${vat}% = ${formatVND(calc.total)}`;
+      document.getElementById('elecPreviewText').textContent = `Tiêu thụ: ${formatNumberVN(calc.kwh)} kWh × ${formatNumberVN(rate)}đ + VAT ${formatNumberVN(vat)}% = ${formatVND(calc.total)}`;
 
       const times = Number(document.getElementById('cleanTimesInput').value || 0);
       const cRate = Number(document.getElementById('cleanRateInput').value || 0);
-      document.getElementById('cleanPreviewText').textContent = `Thành tiền vệ sinh: ${times} lần × ${cRate.toLocaleString('vi-VN')}đ = ${formatVND(times * cRate)}`;
+      document.getElementById('cleanPreviewText').textContent = `Thành tiền vệ sinh: ${formatNumberVN(times)} lần × ${formatNumberVN(cRate)}đ = ${formatVND(times * cRate)}`;
     }
 
     function saveMonthCosts(e) {
@@ -2942,7 +2988,7 @@ NOTIFY pgrst, 'reload schema';</pre>
       mObj.elecVat = Number(document.getElementById('elecVatInput').value || 0);
       mObj.cleanTimes = Number(document.getElementById('cleanTimesInput').value || 0);
       mObj.cleanRate = Number(document.getElementById('cleanRateInput').value || 0);
-      mObj.vp = Number(document.getElementById('vpRentInput').value || 0);
+      mObj.vp = parseMoneyVN(document.getElementById('vpRentInput').value);
 
       addAuditLog('Cập nhật chi phí tháng', `${mObj.month} (${mObj.company})`);
       saveState();
@@ -2953,6 +2999,7 @@ NOTIFY pgrst, 'reload schema';</pre>
 
     function openAddMonthModal() {
       document.getElementById('newMonthValueInput').value = '';
+      setMoneyInputValue('newMonthVpInput', 5250000);
       openModal('addMonthModal');
     }
 
@@ -2982,7 +3029,7 @@ NOTIFY pgrst, 'reload schema';</pre>
         elecVat: 8,
         cleanTimes: 0,
         cleanRate: 700000,
-        vp: Number(document.getElementById('newMonthVpInput').value || 0),
+        vp: parseMoneyVN(document.getElementById('newMonthVpInput').value),
         status: document.getElementById('newMonthStatusInput').value,
         locked: false
       });
@@ -3144,10 +3191,9 @@ NOTIFY pgrst, 'reload schema';</pre>
 
     function autoFillNcRate() {
       const taskName = document.getElementById('ncTaskInput').value;
-      const amtInput = document.getElementById('ncAmountInput');
       const found = getNcTaskTypesList().find(t => t.name === taskName);
       if (found && Number(found.defaultRate || 0) > 0) {
-        amtInput.value = Number(found.defaultRate);
+        setMoneyInputValue('ncAmountInput', Number(found.defaultRate));
       }
     }
 
@@ -3160,7 +3206,7 @@ NOTIFY pgrst, 'reload schema';</pre>
     function resetNcTaskForm() {
       document.getElementById('ncTaskEditId').value = '';
       document.getElementById('ncTaskNameInput').value = '';
-      document.getElementById('ncTaskDefaultRateInput').value = 530000;
+      setMoneyInputValue('ncTaskDefaultRateInput', 530000);
       document.getElementById('ncTaskFormModeLabel').textContent = '+ Thêm loại công việc mới';
       document.getElementById('btnSaveNcTaskSubmit').textContent = 'Thêm loại công việc';
       document.getElementById('btnCancelEditNcTask').classList.add('hidden');
@@ -3171,7 +3217,7 @@ NOTIFY pgrst, 'reload schema';</pre>
       if (!item) return;
       document.getElementById('ncTaskEditId').value = item.id;
       document.getElementById('ncTaskNameInput').value = item.name;
-      document.getElementById('ncTaskDefaultRateInput').value = Number(item.defaultRate || 0);
+      setMoneyInputValue('ncTaskDefaultRateInput', Number(item.defaultRate || 0));
       document.getElementById('ncTaskFormModeLabel').textContent = `Đang sửa: ${item.name}`;
       document.getElementById('btnSaveNcTaskSubmit').textContent = 'Cập nhật';
       document.getElementById('btnCancelEditNcTask').classList.remove('hidden');
@@ -3182,7 +3228,7 @@ NOTIFY pgrst, 'reload schema';</pre>
       e.preventDefault();
       const editId = document.getElementById('ncTaskEditId').value;
       const nameVal = document.getElementById('ncTaskNameInput').value.trim();
-      const rateVal = Math.max(0, Number(document.getElementById('ncTaskDefaultRateInput').value || 0));
+      const rateVal = Math.max(0, parseMoneyVN(document.getElementById('ncTaskDefaultRateInput').value));
       if (!nameVal) return;
 
       const list = getNcTaskTypesList();
@@ -3267,7 +3313,7 @@ NOTIFY pgrst, 'reload schema';</pre>
       populateNcTaskDropdown(item ? item.task : getNcTaskTypesList()[0]?.name);
       document.getElementById('ncProjectInput').value = item ? item.project : '';
       document.getElementById('ncWorkerInput').value = item ? item.worker : '';
-      document.getElementById('ncAmountInput').value = item ? item.amount : (getNcTaskTypesList()[0]?.defaultRate || 530000);
+      setMoneyInputValue('ncAmountInput', item ? item.amount : (getNcTaskTypesList()[0]?.defaultRate || 530000));
       document.getElementById('ncStatusInput').value = item ? item.status : 'Chưa thanh toán';
       openModal('ncModal');
     }
@@ -3282,7 +3328,7 @@ NOTIFY pgrst, 'reload schema';</pre>
         task: document.getElementById('ncTaskInput').value,
         project: document.getElementById('ncProjectInput').value.trim(),
         worker: document.getElementById('ncWorkerInput').value.trim(),
-        amount: Number(document.getElementById('ncAmountInput').value || 0),
+        amount: parseMoneyVN(document.getElementById('ncAmountInput').value),
         status: document.getElementById('ncStatusInput').value
       };
 
@@ -3458,9 +3504,9 @@ NOTIFY pgrst, 'reload schema';</pre>
       sel.value = item ? item.assetId : (appState.assets[0]?.id || '');
 
       document.getElementById('xeQtyInput').value = item ? item.qty : 0;
-      document.getElementById('xeAllowanceInput').value = item ? item.allowance : 0;
-      document.getElementById('xeAdvanceInput').value = item ? item.cashAdvance : 0;
-      document.getElementById('xeTollInput').value = item ? item.tollFee : 0;
+      setMoneyInputValue('xeAllowanceInput', item ? item.allowance : 0);
+      setMoneyInputValue('xeAdvanceInput', item ? item.cashAdvance : 0);
+      setMoneyInputValue('xeTollInput', item ? item.tollFee : 0);
       document.getElementById('xeOdoInput').value = item ? (item.odo || '') : '';
       document.getElementById('xeStatusInput').value = item ? item.status : 'Chưa thanh toán';
       onXeAssetChange();
@@ -3477,9 +3523,9 @@ NOTIFY pgrst, 'reload schema';</pre>
       const bd = calcXeRowBreakdown({
         assetId: document.getElementById('xeAssetSelect').value,
         qty: document.getElementById('xeQtyInput').value,
-        allowance: document.getElementById('xeAllowanceInput').value,
-        cashAdvance: document.getElementById('xeAdvanceInput').value,
-        tollFee: document.getElementById('xeTollInput').value
+        allowance: parseMoneyVN(document.getElementById('xeAllowanceInput').value),
+        cashAdvance: parseMoneyVN(document.getElementById('xeAdvanceInput').value),
+        tollFee: parseMoneyVN(document.getElementById('xeTollInput').value)
       });
       document.getElementById('xePreviewBox').textContent = `Tiền xe/công: ${formatVND(bd.assetCost)} + Phụ cấp: ${formatVND(bd.allowance)} + Tạm ứng: ${formatVND(bd.cashAdvance)} + Cầu đường: ${formatVND(bd.tollFee)} = TỔNG: ${formatVND(bd.total)}`;
     }
@@ -3495,9 +3541,9 @@ NOTIFY pgrst, 'reload schema';</pre>
         desc: document.getElementById('xeDescInput').value.trim(),
         assetId: document.getElementById('xeAssetSelect').value,
         qty: Number(document.getElementById('xeQtyInput').value || 0),
-        allowance: Number(document.getElementById('xeAllowanceInput').value || 0),
-        cashAdvance: Number(document.getElementById('xeAdvanceInput').value || 0),
-        tollFee: Number(document.getElementById('xeTollInput').value || 0),
+        allowance: parseMoneyVN(document.getElementById('xeAllowanceInput').value),
+        cashAdvance: parseMoneyVN(document.getElementById('xeAdvanceInput').value),
+        tollFee: parseMoneyVN(document.getElementById('xeTollInput').value),
         odo: document.getElementById('xeOdoInput').value.trim(),
         status: document.getElementById('xeStatusInput').value
       };
@@ -3589,7 +3635,7 @@ NOTIFY pgrst, 'reload schema';</pre>
       document.getElementById('assetPlateInput').value = item ? (item.plate || '') : '';
       document.getElementById('assetNameInput').value = item ? item.name : '';
       document.getElementById('assetUnitInput').value = item ? item.unit : 'km';
-      document.getElementById('assetRateInput').value = item ? item.rate : 0;
+      setMoneyInputValue('assetRateInput', item ? item.rate : 0);
       document.getElementById('assetNoteInput').value = item ? (item.note || '') : '';
       openModal('assetModal');
     }
@@ -3602,7 +3648,7 @@ NOTIFY pgrst, 'reload schema';</pre>
         plate: document.getElementById('assetPlateInput').value.trim(),
         name: document.getElementById('assetNameInput').value.trim(),
         unit: document.getElementById('assetUnitInput').value,
-        rate: Number(document.getElementById('assetRateInput').value || 0),
+        rate: parseMoneyVN(document.getElementById('assetRateInput').value),
         note: document.getElementById('assetNoteInput').value.trim()
       };
       if (id) {
