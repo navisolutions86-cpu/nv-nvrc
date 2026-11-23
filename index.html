@@ -2195,6 +2195,12 @@ NOTIFY pgrst, 'reload schema';</pre>
     }
 
     function getScopedNcEntries() {
+      const u = getCurrentUser();
+      if (!u) return [];
+      // Tài khoản thuộc riêng NAVI hoặc NVRC chỉ xem được Nhân công thuê ngoài của chính đơn vị mình
+      if (u.company === 'NAVI' || u.company === 'NVRC') {
+        return appState.ncEntries.filter((item) => item.company === u.company);
+      }
       const sc = appState.activeScope;
       return appState.ncEntries.filter((item) => {
         if (!canAccessCompany(item.company)) return false;
@@ -2661,14 +2667,18 @@ NOTIFY pgrst, 'reload schema';</pre>
     }
 
     function renderNcTables() {
+      const u = getCurrentUser();
       const scoped = getScopedNcEntries();
       const months = sortMonthsAsc(Array.from(new Set(scoped.map((n) => n.month))));
+
       const monthFilterEl = document.getElementById('filterNcMonth');
       if (monthFilterEl) {
-        const prev = monthFilterEl.value || 'ALL';
+        const prevMonth = monthFilterEl.value || 'ALL';
         monthFilterEl.innerHTML = `<option value="ALL">Tất cả các tháng</option>` +
           months.map((m) => `<option value="${escapeHtml(m)}">Tháng ${escapeHtml(m)}</option>`).join('');
-        if (Array.from(monthFilterEl.options).some((o) => o.value === prev)) monthFilterEl.value = prev;
+        if (Array.from(monthFilterEl.options).some((o) => o.value === prevMonth)) {
+          monthFilterEl.value = prevMonth;
+        }
       }
 
       const fMonth = monthFilterEl ? monthFilterEl.value : 'ALL';
@@ -2690,10 +2700,11 @@ NOTIFY pgrst, 'reload schema';</pre>
       const canEdit = hasPermission('edit');
       const canDel = hasPermission('delete');
 
-      // Sub-table ở Tab 1 (8 dòng mới nhất)
+      // Sub-table ở Tab 1 (Nhân Công Thuê Ngoài Chi tiết theo đúng đơn vị của tài khoản)
       const subContainer = document.getElementById('ncSubTableContainer');
       if (subContainer) {
         const recent = [...scoped].slice(-6).reverse();
+        const unitLabel = (u && u.company !== 'BOTH') ? u.company : (appState.activeScope === 'ALL' ? 'Cả 2 bên' : appState.activeScope);
         subContainer.innerHTML = recent.length ? `
           <div class="space-y-2">
             ${recent.map((n) => {
@@ -2701,8 +2712,11 @@ NOTIFY pgrst, 'reload schema';</pre>
               return `
                 <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 text-xs">
                   <div class="min-w-0">
-                    <div class="font-bold text-slate-900 truncate">${escapeHtml(n.project)} <span class="font-normal text-slate-500">(${escapeHtml(n.worker)})</span></div>
-                    <div class="text-[11px] text-slate-500">${escapeHtml(n.date)} • ${escapeHtml(n.task)}</div>
+                    <div class="font-bold text-slate-900 truncate flex items-center gap-1.5">
+                      <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${n.company === 'NVRC' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}">${escapeHtml(n.company)}</span>
+                      <span class="truncate">${escapeHtml(n.project)} <span class="font-normal text-slate-500">(${escapeHtml(n.worker)})</span></span>
+                    </div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(n.date)} • ${escapeHtml(n.task)}</div>
                   </div>
                   <div class="text-right shrink-0">
                     <div class="font-bold text-slate-900 tabular-nums">${formatCurrency(net)}</div>
@@ -2712,7 +2726,7 @@ NOTIFY pgrst, 'reload schema';</pre>
               `;
             }).join('')}
           </div>
-        ` : `<div class="text-center py-6 text-xs text-slate-400">Chưa có dữ liệu nhân công thuê ngoài</div>`;
+        ` : `<div class="text-center py-6 text-xs text-slate-400">Chưa có dữ liệu nhân công thuê ngoài của ${escapeHtml(unitLabel)}</div>`;
       }
 
       // Main table ở Tab 2
