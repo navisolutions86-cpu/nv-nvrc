@@ -1193,6 +1193,16 @@ NOTIFY pgrst, 'reload schema';</pre>
 
     const DEFAULT_USERS = [
       {
+        id: 'u_admin_default',
+        username: 'admin',
+        password: '1234',
+        name: 'Quản Trị Viên (Admin)',
+        company: 'BOTH',
+        roleLabel: 'Admin Tổng 2 Bên',
+        active: true,
+        permissions: { create: true, edit: true, delete: true, approve: true, manageUsers: true, configSupabase: true }
+      },
+      {
         id: 'u_admin_both',
         username: 'admin2ben',
         password: '123',
@@ -1435,10 +1445,14 @@ NOTIFY pgrst, 'reload schema';</pre>
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved);
+          const loadedUsers = Array.isArray(parsed.users) && parsed.users.length ? parsed.users : [...DEFAULT_USERS];
+          if (!loadedUsers.some((u) => u.username.toLowerCase() === 'admin')) {
+            loadedUsers.unshift(DEFAULT_USERS[0]);
+          }
           appState = {
             ...appState,
             ...parsed,
-            users: Array.isArray(parsed.users) && parsed.users.length ? parsed.users : DEFAULT_USERS,
+            users: loadedUsers,
             assets: Array.isArray(parsed.assets) && parsed.assets.length ? parsed.assets : DEFAULT_ASSETS,
             taskTypes: Array.isArray(parsed.taskTypes) && parsed.taskTypes.length ? parsed.taskTypes : DEFAULT_TASK_TYPES,
             monthlyCosts: parsed.monthlyCosts && Object.keys(parsed.monthlyCosts).length ? parsed.monthlyCosts : DEFAULT_MONTHLY_COSTS,
@@ -1917,7 +1931,7 @@ NOTIFY pgrst, 'reload schema';</pre>
     }
 
     async function pullStateFromSupabase(notify = false) {
-      if (!isSupabaseConfigured()) return false;
+      if (!isSupabaseConfigured()) return { ok: false, error: 'Chưa cấu hình Supabase' };
       try {
         const endpoint = `${supabaseConfig.url}/rest/v1/${encodeURIComponent(supabaseConfig.table)}?id=eq.${encodeURIComponent(supabaseConfig.recordId)}&select=id,payload,updated_at`;
         const res = await fetch(endpoint, {
@@ -1928,8 +1942,9 @@ NOTIFY pgrst, 'reload schema';</pre>
         if (!res.ok) {
           const errText = await res.text();
           updateSupabaseBadge('error', 'Lỗi tải Cloud');
-          if (notify) showSupabaseBoxMessage(`Tải dữ liệu thất bại (HTTP ${res.status}): ${errText}`, false);
-          return false;
+          const detailMsg = `HTTP ${res.status}: ${errText}`;
+          if (notify) showSupabaseBoxMessage(`Tải dữ liệu thất bại (${detailMsg})`, false);
+          return { ok: false, error: detailMsg };
         }
 
         const rows = await res.json();
@@ -1940,7 +1955,7 @@ NOTIFY pgrst, 'reload schema';</pre>
           if (notify) {
             showSupabaseBoxMessage('Kết nối thành công nhưng trên Cloud chưa có bản ghi nào. Hãy bấm "Lưu & Đồng bộ lên Cloud".', true);
           }
-          return true;
+          return { ok: true };
         }
 
         const remotePayload = rows[0].payload;
@@ -1949,13 +1964,17 @@ NOTIFY pgrst, 'reload schema';</pre>
 
         if (notify || remoteTs > localTs) {
           isApplyingRemoteUpdate = true;
+          const remoteUsers = Array.isArray(remotePayload.users) && remotePayload.users.length ? remotePayload.users : appState.users;
+          if (!remoteUsers.some((u) => u.username.toLowerCase() === 'admin')) {
+            remoteUsers.unshift(DEFAULT_USERS[0]);
+          }
           appState = {
             ...appState,
             ...remotePayload,
             currentUserId: appState.currentUserId,
             activeScope: appState.activeScope,
             activeTab: appState.activeTab,
-            users: Array.isArray(remotePayload.users) && remotePayload.users.length ? remotePayload.users : appState.users,
+            users: remoteUsers,
             assets: Array.isArray(remotePayload.assets) && remotePayload.assets.length ? remotePayload.assets : appState.assets,
             taskTypes: Array.isArray(remotePayload.taskTypes) && remotePayload.taskTypes.length ? remotePayload.taskTypes : appState.taskTypes,
             monthlyCosts: remotePayload.monthlyCosts || appState.monthlyCosts,
@@ -1972,11 +1991,12 @@ NOTIFY pgrst, 'reload schema';</pre>
             showToast('Đã cập nhật dữ liệu từ Cloud!', 'success');
           }
         }
-        return true;
+        return { ok: true };
       } catch (err) {
         updateSupabaseBadge('error', 'Lỗi tải Cloud');
-        if (notify) showSupabaseBoxMessage(`Lỗi kết nối Cloud: ${err.message}`, false);
-        return false;
+        const detailMsg = err.message || 'Lỗi kết nối mạng';
+        if (notify) showSupabaseBoxMessage(`Lỗi kết nối Cloud: ${detailMsg}`, false);
+        return { ok: false, error: detailMsg };
       }
     }
 
@@ -3931,13 +3951,13 @@ NOTIFY pgrst, 'reload schema';</pre>
 
         persistSupabaseConfig({ url, anonKey: key, table, recordId: record, enabled: true });
         populateSupabaseFormFields();
-        const ok = await pullStateFromSupabase(false);
-        if (ok) {
+        const result = await pullStateFromSupabase(false);
+        if (result && result.ok) {
           closeModal('supabaseQuickModal');
           startSupabaseAutoSync();
           showToast('Kết nối Supabase Cloud thành công!', 'success');
         } else if (errBox) {
-          errBox.textContent = 'Không thể kết nối Supabase. Vui lòng kiểm tra lại URL, Anon Key hoặc chạy đoạn SQL tạo bảng.';
+          errBox.textContent = `Kết nối thất bại (${result?.error || 'Kiểm tra lại URL/Key'}). Lưu ý: Hãy lấy khóa "anon public" (bắt đầu bằng eyJ...) trong Supabase → Project Settings → API Keys → Legacy anon, service_role API keys nếu khóa sb_publishable_ bị từ chối.`;
           errBox.classList.remove('hidden');
         }
       });
