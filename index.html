@@ -410,6 +410,338 @@
         </div>
 
         <div class="p-4 bg-slate-50/60 border-b border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+          <select id="ncSubMonthFilter" onchange="renderNcSubTable()"
+            class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-700">
+            <option value="">Tất cả tháng</option>
+          </select>
+          <select id="ncSubTaskFilter" onchange="renderNcSubTable()"
+            class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-700">
+            <option value="">Tất cả công việc</option>
+          </select>
+          <select id="ncSubStatusFilter" onchange="renderNcSubTable()"
+            class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-700">
+            <option value="">Tất cả trạng thái</option>
+            <option value="Đã thanh toán">Đã thanh toán</option>
+            <option value="Chưa thanh toán">Chưa thanh toán</option>
+          </select>
+          <input id="ncSubSearchInput" type="text" oninput="renderNcSubTable()" placeholder="Tìm công trình, nhân sự..."
+            class="flex-1 min-w-[160px] px-3 py-1.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <span id="ncSubFilterSummary" class="font-bold text-slate-700 px-2"></span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-600 font-bold uppercase text-[11px] border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-3">Đơn vị</th>
+                <th class="py-3 px-3">Tháng</th>
+                <th class="py-3 px-3">Ngày</th>
+                <th class="py-3 px-3">Công trình</th>
+                <th class="py-3 px-3">Nhân sự</th>
+                <th class="py-3 px-3">Công việc</th>
+                <th class="py-3 px-3 text-right">Thành tiền</th>
+                <th class="py-3 px-3 text-center">Trạng thái</th>
+                <th class="py-3 px-3 text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="ncSubTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: HỖ TRỢ XE & NHÂN CÔNG 2 BÊN -->
+    <section id="tab-xe" class="tab-panel hidden space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Chi Tiết Hỗ Trợ Xe & Nhân Công Qua Lại (NAVI ↔ NVRC)</h2>
+            <p class="text-xs text-slate-500">Tách bạch 4 khoản: Tiền xe/công chính, Phụ cấp, Tiền tạm ứng & Phí cầu đường</p>
+          </div>
+          <button type="button" id="btnAddXeSub" onclick="openXeModal()"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white transition flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Thêm lượt hỗ trợ</span>
+          </button>
+        </div>
+
+        <div class="p-4 bg-slate-50/60 border-b border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+          <select id="xeSubMonthFilter" onchange="renderXeSubTable()"
+            class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-700">
+            <option value="">Tất cả tháng</option>
+          </select>
+          <select id="xeSubDirFilter" onchange="renderXeSubTable()"
+            class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-700">
+            <option value="">Tất cả chiều hỗ trợ</option>
+            <option value="NAVI_TO_NVRC">NAVI → NVRC</option>
+            <option value="NVRC_TO_NAVI">NVRC → NAVI</option>
+          </select>
+          <select id="xeSubStatusFilter" onchange="renderXeSubTable()"
+            class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-700">
+            <option value="">Tất cả trạng thái</option>
+            <option value="Đã thanh toán">Đã thanh toán</option>
+            <option value="Chưa thanh toán">Chưa thanh toán</option>
+          </select>
+          <input id="xeSubSearchInput" type="text" oninput="renderXeSubTable()" placeholder="Tìm lộ trình, xe, ODO..."
+            class="flex-1 min-w-[160px] px-3 py-1.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500" />
+          <span id="xeSubFilterSummary" class="font-bold text-slate-700 px-2"></span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-600 font-bold uppercase text-[11px] border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-3">Ngày</th>
+                <th class="py-3 px-3">Chiều hỗ trợ</th>
+                <th class="py-3 px-3">Nội dung & ODO</th>
+                <th class="py-3 px-3 text-right">Số lượng</th>
+                <th class="py-3 px-3 text-right">Tiền xe/công</th>
+                <th class="py-3 px-3 text-right">Phụ cấp</th>
+                <th class="py-3 px-3 text-right">Tạm ứng</th>
+                <th class="py-3 px-3 text-right">Cầu đường</th>
+                <th class="py-3 px-3 text-right">Tổng cộng</th>
+                <th class="py-3 px-3 text-center">Trạng thái</th>
+                <th class="py-3 px-3 text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="xeSubTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: DANH MỤC XE, TÀI SẢN & ĐỊNH MỨC ĐƠN GIÁ -->
+    <section id="tab-assets" class="tab-panel hidden space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Danh Mục Phương Tiện, Tài Sản & Định Mức Đơn Giá</h2>
+            <p class="text-xs text-slate-500">Cập nhật đơn giá/km, đơn giá/chuyến hoặc đơn giá/công để hệ thống tự động nhân thành tiền</p>
+          </div>
+          <button type="button" id="btnAddAssetTop" onclick="openAssetModal()"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Thêm xe / định mức</span>
+          </button>
+        </div>
+
+        <div class="p-4 bg-slate-50/60 border-b border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+          <select id="assetOwnerFilter" onchange="renderAssetsTab()"
+            class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-700">
+            <option value="">Tất cả chủ sở hữu</option>
+            <option value="NAVI">NAVI</option>
+            <option value="NVRC">NVRC</option>
+          </select>
+          <input id="assetSearchInput" type="text" oninput="renderAssetsTab()" placeholder="Tìm tên xe, biển số, ghi chú..."
+            class="flex-1 min-w-[180px] px-3 py-1.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500" />
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-600 font-bold uppercase text-[11px] border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4">Đơn vị sở hữu</th>
+                <th class="py-3 px-4">Tên phương tiện / Định mức</th>
+                <th class="py-3 px-4">Biển số / Mã</th>
+                <th class="py-3 px-4 text-center">Đơn vị tính</th>
+                <th class="py-3 px-4 text-right">Đơn giá áp dụng</th>
+                <th class="py-3 px-4">Ghi chú</th>
+                <th class="py-3 px-4 text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="assetsTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: BIÊN BẢN KIỂM TRA & DUYỆT CHI -->
+    <section id="tab-vouchers" class="tab-panel hidden space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Biên Bản Kiểm Tra, Đối Soát & Ký Duyệt Chi Điện Tử</h2>
+            <p class="text-xs text-slate-500">Hỗ trợ ký duyệt nội bộ 1 chữ ký & đối soát liên công ty 2 chữ ký (NAVI ↔ NVRC), tự động gạch nợ & in chuẩn A4</p>
+          </div>
+          <button type="button" id="btnCreateVoucherTop" onclick="openVoucherModal()"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="file-plus-2" class="w-4 h-4"></i>
+            <span>Lập biên bản mới</span>
+          </button>
+        </div>
+
+        <div class="p-4 bg-slate-50/60 border-b border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+          <select id="voucherTypeFilter" onchange="renderVouchersTab()"
+            class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-700">
+            <option value="">Tất cả loại biên bản</option>
+            <option value="INTERNAL_NC">Nội bộ (NC thuê ngoài)</option>
+            <option value="INTER_SUPPORT">Liên công ty (Hỗ trợ 2 bên)</option>
+          </select>
+          <select id="voucherStatusFilter" onchange="renderVouchersTab()"
+            class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-700">
+            <option value="">Tất cả trạng thái</option>
+            <option value="PENDING">Chờ duyệt</option>
+            <option value="APPROVED">Đã phê duyệt</option>
+          </select>
+          <input id="voucherSearchInput" type="text" oninput="renderVouchersTab()" placeholder="Tìm số biên bản, tiêu đề, người ký..."
+            class="flex-1 min-w-[180px] px-3 py-1.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div id="vouchersListGrid" class="p-4 sm:p-5 grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- TAB 6: PHÂN QUYỀN & CẤU HÌNH HỆ THỐNG SUPABASE CLOUD -->
+    <section id="tab-rbac" class="tab-panel hidden space-y-5">
+      <!-- KHUNG CẤU HÌNH KẾT NỐI SUPABASE CLOUD -->
+      <div id="supabaseSettingsCard" class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-teal-950 p-4 sm:p-5 text-white flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300 shrink-0">
+              <i data-lucide="database" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-extrabold tracking-tight">Cấu Hình Kết Nối Cơ Sở Dữ Liệu Supabase Cloud</h2>
+              <p class="text-xs text-slate-300">Tự động đồng bộ mỗi 5 giây giữa NAVI và NVRC trên mọi thiết bị & GitHub Pages</p>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span id="sbCardStatusPill" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-200 border border-amber-400/30 flex items-center gap-1.5">
+              <span id="sbCardStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span id="sbCardStatusLabel">Offline Local</span>
+            </span>
+            <span id="sbLastSyncLabel" class="text-[11px] text-slate-300">Đồng bộ gần nhất: Chưa đồng bộ</span>
+          </div>
+        </div>
+
+        <div class="p-4 sm:p-5 space-y-4 text-xs">
+          <div id="sbNoPermBanner" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 font-semibold">
+            Tài khoản hiện tại chỉ có quyền xem cấu hình kết nối Supabase. Liên hệ Admin hoặc Lãnh đạo để chỉnh sửa.
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">1. Supabase Project URL <span class="text-rose-600">*</span></label>
+              <input id="sbUrlInput" type="url" placeholder="https://xxxxxxxxxxxx.supabase.co"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600" />
+              <p class="text-[11px] text-slate-400 mt-1">Lấy tại Supabase → Connect hoặc Project Settings → Data API</p>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">2. Anon Public Key / Publishable Key <span class="text-rose-600">*</span></label>
+              <div class="relative">
+                <input id="sbKeyInput" type="password" placeholder="sb_publishable_... hoặc eyJ..."
+                  class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600" />
+                <button type="button" onclick="toggleSupabaseKeyVisibility()" title="Ẩn / Hiện Key"
+                  class="absolute inset-y-0 right-2.5 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer">
+                  <i id="sbKeyEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Sử dụng khóa công khai (không dùng secret/service_role key)</p>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">3. Tên bảng dữ liệu (Table Name)</label>
+              <input id="sbTableInput" type="text" value="nv_nvrc_app_state"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-xs" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">4. Record ID định danh (Kho dữ liệu)</label>
+              <input id="sbRecordIdInput" type="text" value="nv_nvrc_main_v1"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-xs" />
+            </div>
+          </div>
+
+          <div id="sbTestResultBox" class="hidden p-3 rounded-xl border text-xs font-semibold"></div>
+
+          <div id="sbActionButtonsRow" class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="testSupabaseConnection()"
+                class="px-3.5 py-2 rounded-xl font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+                <span>Test kết nối</span>
+              </button>
+              <button type="button" onclick="saveAndConnectSupabase()"
+                class="px-4 py-2 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                <span>Lưu & Đồng bộ lên Cloud</span>
+              </button>
+              <button type="button" onclick="pullStateFromSupabase(true)"
+                class="px-3.5 py-2 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="cloud-download" class="w-4 h-4"></i>
+                <span>Tải dữ liệu từ Cloud về</span>
+              </button>
+              <button type="button" onclick="disconnectSupabase()"
+                class="px-3.5 py-2 rounded-xl font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="unplug" class="w-4 h-4"></i>
+                <span>Ngắt kết nối</span>
+              </button>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="downloadConfiguredHtml()"
+                class="px-3.5 py-2 rounded-xl font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 transition flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="file-code-2" class="w-4 h-4"></i>
+                <span>Tải index.html gắn sẵn Key</span>
+              </button>
+              <button type="button" onclick="toggleSqlPreviewBox()"
+                class="px-3.5 py-2 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="code-2" class="w-4 h-4"></i>
+                <span>Xem / Copy SQL khởi tạo bảng</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="sbSqlPreviewContainer" class="hidden p-4 rounded-xl bg-slate-900 text-slate-100 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400">Chạy đoạn SQL này 1 lần trong Supabase → SQL Editor → New query:</span>
+              <button type="button" onclick="copySupabaseSql()" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold cursor-pointer">Copy SQL</button>
+            </div>
+            <pre id="supabaseSqlBlock" class="text-[11px] font-mono overflow-x-auto leading-relaxed text-slate-200">CREATE TABLE IF NOT EXISTS public.nv_nvrc_app_state (
+    id TEXT PRIMARY KEY,
+    payload JSONB NOT NULL,
+    updated_by TEXT,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.nv_nvrc_app_state TO anon, authenticated;
+
+ALTER TABLE public.nv_nvrc_app_state ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow read app state" ON public.nv_nvrc_app_state;
+CREATE POLICY "Allow read app state" ON public.nv_nvrc_app_state FOR SELECT TO anon, authenticated USING (true);
+
+DROP POLICY IF EXISTS "Allow insert app state" ON public.nv_nvrc_app_state;
+CREATE POLICY "Allow insert app state" ON public.nv_nvrc_app_state FOR INSERT TO anon, authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow update app state" ON public.nv_nvrc_app_state;
+CREATE POLICY "Allow update app state" ON public.nv_nvrc_app_state FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
+
+NOTIFY pgrst, 'reload schema';</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Quản Lý Tài Khoản & Ma Trận Phân Quyền Chi Tiết Theo Tác Vụ</h2>
+            <p class="text-xs text-slate-500">Thêm/sửa/xóa tài khoản, đặt lại mật khẩu/PIN, khóa đăng nhập và cấp quyền Thêm/Sửa/Xóa/Duyệt/Cấu hình Supabase</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="openChangePasswordModal()"
+              class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition flex items-center gap-1.5 cursor-pointer">
+              <i data-lucide="key-round" class="w-4 h-4"></i>
+              <span>Đổi mật khẩu của tôi</span>
+            </button>
+            <button type="button" id="btnAddUserRbac" onclick="openUserModal()"
+              class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition flex items-center gap-1.5 cursor-pointer">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>Thêm tài khoản</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-4 bg-slate-50/60 border-b border-slate-100 flex flex-wrap items-center gap-2 text-xs">
           <input id="userSearchInput" type="text" oninput="renderRbacTab()" placeholder="Tìm họ tên, ID đăng nhập, vai trò..."
             class="flex-1 min-w-[180px] px-3 py-1.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500" />
           <select id="userCompanyFilter" onchange="renderRbacTab()"
@@ -2502,6 +2834,172 @@
       const cRate = Number(document.getElementById('cleanRateInput').value || 0);
       document.getElementById('cleanPreviewText').textContent = `Thành tiền vệ sinh: ${times} lần × ${cRate.toLocaleString('vi-VN')}đ = ${formatVND(times * cRate)}`;
     }
+
+    function saveMonthCosts(e) {
+      e.preventDefault();
+      const id = document.getElementById('monthEditId').value;
+      const mObj = appState.months.find(m => m.id === id);
+      if (!mObj) return;
+      if (mObj.locked && !hasPerm('lockMonth')) {
+        showToast('Tháng này đã khóa sổ, bạn không có quyền sửa!', 'error');
+        return;
+      }
+      mObj.status = document.getElementById('monthStatusInput').value;
+      mObj.elecStart = Number(document.getElementById('elecStartInput').value || 0);
+      mObj.elecEnd = Number(document.getElementById('elecEndInput').value || 0);
+      mObj.elecRate = Number(document.getElementById('elecRateInput').value || 0);
+      mObj.elecVat = Number(document.getElementById('elecVatInput').value || 0);
+      mObj.cleanTimes = Number(document.getElementById('cleanTimesInput').value || 0);
+      mObj.cleanRate = Number(document.getElementById('cleanRateInput').value || 0);
+      mObj.vp = Number(document.getElementById('vpRentInput').value || 0);
+
+      addAuditLog('Cập nhật chi phí tháng', `${mObj.month} (${mObj.company})`);
+      saveState();
+      closeModal('monthModal');
+      renderAll();
+      showToast(`Đã cập nhật chi phí tháng ${mObj.month}`);
+    }
+
+    function openAddMonthModal() {
+      document.getElementById('newMonthValueInput').value = '';
+      openModal('addMonthModal');
+    }
+
+    function saveNewMonth(e) {
+      e.preventDefault();
+      const mVal = document.getElementById('newMonthValueInput').value.trim();
+      if (!/^\d{2}\/\d{4}$/.test(mVal)) {
+        showToast('Định dạng tháng phải là MM/YYYY (VD: 04/2027)!', 'error');
+        return;
+      }
+      const scope = getEffectiveCompanyScope();
+      const comp = scope === 'ALL' ? 'NAVI' : scope;
+      const exists = appState.months.find(m => m.month === mVal && m.company === comp);
+      if (exists) {
+        showToast(`Tháng ${mVal} đã tồn tại cho ${comp}!`, 'error');
+        return;
+      }
+      const lastM = appState.months[appState.months.length - 1];
+      const prevEnd = lastM ? Number(lastM.elecEnd || 0) : 0;
+      appState.months.push({
+        id: 'm_' + Date.now(),
+        company: comp,
+        month: mVal,
+        elecStart: prevEnd,
+        elecEnd: prevEnd,
+        elecRate: lastM ? Number(lastM.elecRate || 3153) : 3153,
+        elecVat: 8,
+        cleanTimes: 0,
+        cleanRate: 700000,
+        vp: Number(document.getElementById('newMonthVpInput').value || 0),
+        status: document.getElementById('newMonthStatusInput').value,
+        locked: false
+      });
+      addAuditLog('Thêm kỳ tháng mới', `${mVal} (${comp})`);
+      saveState();
+      closeModal('addMonthModal');
+      renderAll();
+      showToast(`Đã thêm kỳ tháng ${mVal}`);
+    }
+
+    function getScopedNcEntries() {
+      const scope = getEffectiveCompanyScope();
+      return scope === 'ALL' ? appState.ncEntries : appState.ncEntries.filter(n => n.company === scope);
+    }
+
+    function renderNcTable() {
+      const scope = getEffectiveCompanyScope();
+      const lbl = document.getElementById('ncCompanyLabel');
+      if (lbl) lbl.textContent = scope === 'ALL' ? 'Cả 2 bên' : scope;
+
+      const q = (document.getElementById('ncSearchInput')?.value || '').toLowerCase();
+      const st = document.getElementById('ncStatusFilter')?.value || '';
+      const tbody = document.getElementById('ncTableBody');
+      if (!tbody) return;
+
+      const filtered = getScopedNcEntries().filter(n => {
+        if (st && n.status !== st) return false;
+        if (q && !`${n.project} ${n.worker} ${n.task} ${n.month}`.toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      const canEdit = hasPerm('nc', 'edit');
+      tbody.innerHTML = filtered.slice().reverse().map(n => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 whitespace-nowrap font-medium">${formatDateVN(n.date)}</td>
+          <td class="py-2 px-3">
+            <div class="font-semibold text-slate-900">${escapeHTML(n.project)}</div>
+            <div class="text-[11px] text-slate-500">${escapeHTML(n.worker)} • ${escapeHTML(n.task)}</div>
+          </td>
+          <td class="py-2 px-3 text-right font-bold">${formatVND(n.amount)}</td>
+          <td class="py-2 px-3 text-center">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${n.status === 'Đã thanh toán' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHTML(n.status)}</span>
+          </td>
+          <td class="py-2 px-3 text-center">
+            ${canEdit ? `<button type="button" onclick="openNcModal('${n.id}')" class="text-blue-600 hover:underline font-semibold cursor-pointer">Sửa</button>` : '<span class="text-slate-300">—</span>'}
+          </td>
+        </tr>
+      `).join('') || `<tr><td colspan="5" class="py-5 text-center text-slate-400">Chưa có dữ liệu nhân công thuê ngoài.</td></tr>`;
+    }
+
+    function renderNcSubTable() {
+      const scope = getEffectiveCompanyScope();
+      const subLbl = document.getElementById('ncSubCompanyLabel');
+      if (subLbl) subLbl.textContent = scope === 'ALL' ? 'Cả 2 bên' : scope;
+
+      const scoped = getScopedNcEntries();
+      const mSel = document.getElementById('ncSubMonthFilter');
+      const tSel = document.getElementById('ncSubTaskFilter');
+      if (!mSel || !tSel) return;
+
+      const curM = mSel.value;
+      const curT = tSel.value;
+      const months = [...new Set(scoped.map(n => n.month))];
+      const tasks = [...new Set([...getNcTaskTypesList().map(t => t.name), ...scoped.map(n => n.task)])];
+
+      mSel.innerHTML = `<option value="">Tất cả tháng</option>` + months.map(m => `<option value="${m}" ${m === curM ? 'selected' : ''}>${m}</option>`).join('');
+      tSel.innerHTML = `<option value="">Tất cả công việc</option>` + tasks.map(t => `<option value="${escapeHTML(t)}" ${t === curT ? 'selected' : ''}>${escapeHTML(t)}</option>`).join('');
+
+      const q = (document.getElementById('ncSubSearchInput')?.value || '').toLowerCase();
+      const st = document.getElementById('ncSubStatusFilter')?.value || '';
+
+      const filtered = scoped.filter(n => {
+        if (curM && n.month !== curM) return false;
+        if (curT && n.task !== curT) return false;
+        if (st && n.status !== st) return false;
+        if (q && !`${n.project} ${n.worker} ${n.task}`.toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      const sumAmt = filtered.reduce((s, n) => s + Number(n.amount || 0), 0);
+      const sumEl = document.getElementById('ncSubFilterSummary');
+      if (sumEl) sumEl.textContent = `${filtered.length} dòng • Tổng: ${formatVND(sumAmt)}`;
+
+      const canEdit = hasPerm('nc', 'edit');
+      const canDel = hasPerm('nc', 'delete');
+      const tbody = document.getElementById('ncSubTableBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = filtered.slice().reverse().map(n => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded font-bold text-[10px] text-white ${n.company === 'NAVI' ? 'bg-blue-600' : 'bg-teal-600'}">${n.company}</span></td>
+          <td class="py-2.5 px-3 font-semibold">${escapeHTML(n.month)}</td>
+          <td class="py-2.5 px-3 whitespace-nowrap">${formatDateVN(n.date)}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-900">${escapeHTML(n.project)}</td>
+          <td class="py-2.5 px-3">${escapeHTML(n.worker)}</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-slate-100 font-semibold">${escapeHTML(n.task)}</span></td>
+          <td class="py-2.5 px-3 text-right font-extrabold text-slate-900">${formatVND(n.amount)}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${n.status === 'Đã thanh toán' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHTML(n.status)}</span>
+          </td>
+          <td class="py-2.5 px-3 text-center whitespace-nowrap space-x-2">
+            ${canEdit ? `<button type="button" onclick="openNcModal('${n.id}')" class="text-blue-600 hover:underline font-semibold cursor-pointer">Sửa</button>` : ''}
+            ${canDel ? `<button type="button" onclick="deleteNcEntry('${n.id}')" class="text-rose-600 hover:underline font-semibold cursor-pointer">Xóa</button>` : ''}
+          </td>
+        </tr>
+      `).join('') || `<tr><td colspan="9" class="py-6 text-center text-slate-400">Không có dòng nhân công nào phù hợp.</td></tr>`;
+    }
+
     function getNcTaskTypesList() {
       if (!Array.isArray(appState.ncTaskTypes) || appState.ncTaskTypes.length === 0) {
         appState.ncTaskTypes = JSON.parse(JSON.stringify(DEFAULT_NC_TASKS));
