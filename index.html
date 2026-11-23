@@ -2204,8 +2204,11 @@ NOTIFY pgrst, 'reload schema';</pre>
     }
 
     function getScopedXeEntries() {
+      const u = getCurrentUser();
       const sc = appState.activeScope;
       return appState.xeEntries.filter((item) => {
+        // Tài khoản 1 bên (NAVI hoặc NVRC) luôn xem được hỗ trợ qua lại 2 bên để đối soát công nợ
+        if (u && u.company !== 'BOTH') return true;
         if (sc === 'ALL') return true;
         if (sc === 'NVRC') return item.direction === 'NVRC_TO_NAVI';
         if (sc === 'NAVI') return item.direction === 'NAVI_TO_NVRC';
@@ -2216,10 +2219,10 @@ NOTIFY pgrst, 'reload schema';</pre>
     function getAllMonthsList() {
       const set = new Set();
       Object.values(appState.monthlyCosts).forEach((m) => {
-        if (m && m.month) set.add(m.month);
+        if (m && m.month && canAccessCompany(m.company)) set.add(m.month);
       });
       appState.ncEntries.forEach((n) => {
-        if (n && n.month) set.add(n.month);
+        if (n && n.month && canAccessCompany(n.company)) set.add(n.month);
       });
       appState.xeEntries.forEach((x) => {
         if (x && x.month) set.add(x.month);
@@ -3268,13 +3271,20 @@ NOTIFY pgrst, 'reload schema';</pre>
       const container = document.getElementById('vouchersList');
       if (!container) return;
       const canApprove = hasPermission('approve');
+      const u = getCurrentUser();
 
-      if (!appState.vouchers.length) {
-        container.innerHTML = `<div class="col-span-full text-center py-8 text-xs text-slate-400">Chưa có biên bản duyệt chi nào.</div>`;
+      const visibleVouchers = appState.vouchers.filter((v) => {
+        if (!u || u.company === 'BOTH') return true;
+        if (v.type === 'INTERCOMPANY') return true;
+        return v.company === u.company;
+      });
+
+      if (!visibleVouchers.length) {
+        container.innerHTML = `<div class="col-span-full text-center py-8 text-xs text-slate-400">Chưa có biên bản duyệt chi nào thuộc phạm vi đơn vị của bạn.</div>`;
         return;
       }
 
-      container.innerHTML = appState.vouchers.map((v) => {
+      container.innerHTML = visibleVouchers.map((v) => {
         const isFullySigned = v.type === 'INTERNAL' ? Boolean(v.signA) : Boolean(v.signA && v.signB);
         return `
           <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs flex flex-col justify-between gap-3">
@@ -3316,8 +3326,13 @@ NOTIFY pgrst, 'reload schema';</pre>
         showToast('Bạn không có quyền lập biên bản!', 'error');
         return;
       }
+      const u = getCurrentUser();
+      const vCompanyEl = document.getElementById('vCompany');
+      if (vCompanyEl && u && u.company !== 'BOTH') {
+        vCompanyEl.value = u.company;
+      }
       const listEl = document.getElementById('vSelectableItems');
-      const unpaidNc = appState.ncEntries.filter((n) => n.status !== 'Đã thanh toán');
+      const unpaidNc = appState.ncEntries.filter((n) => n.status !== 'Đã thanh toán' && canAccessCompany(n.company));
       const unpaidXe = appState.xeEntries.filter((x) => x.status !== 'Đã thanh toán');
 
       const items = [
@@ -3794,12 +3809,21 @@ NOTIFY pgrst, 'reload schema';</pre>
     }
 
     function openMonthModal(editKey = null) {
+      const u = getCurrentUser();
+      const mCompanyEl = document.getElementById('mCompany');
       if (editKey && appState.monthlyCosts[editKey]) {
         const m = appState.monthlyCosts[editKey];
+        if (!canAccessCompany(m.company)) {
+          showToast('Bạn không có quyền xem/sửa chi phí nội bộ của đơn vị khác!', 'error');
+          return;
+        }
         document.getElementById('monthEditKey').value = editKey;
         document.getElementById('monthModalTitle').textContent = `Sửa Chi Phí Tháng ${m.month} (${m.company})`;
         document.getElementById('mMonth').value = m.month;
-        document.getElementById('mCompany').value = m.company;
+        if (mCompanyEl) {
+          mCompanyEl.value = m.company;
+          mCompanyEl.disabled = Boolean(u && u.company !== 'BOTH');
+        }
         document.getElementById('mElecStart').value = m.elecStart || 0;
         document.getElementById('mElecEnd').value = m.elecEnd || 0;
         document.getElementById('mElecRate').value = m.elecRate || 3500;
@@ -3813,7 +3837,10 @@ NOTIFY pgrst, 'reload schema';</pre>
         document.getElementById('monthModalTitle').textContent = 'Thêm Tháng Chi Phí Mới';
         const now = new Date();
         document.getElementById('mMonth').value = `${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-        document.getElementById('mCompany').value = appState.activeScope === 'NAVI' ? 'NAVI' : 'NVRC';
+        if (mCompanyEl) {
+          mCompanyEl.value = (u && u.company !== 'BOTH') ? u.company : (appState.activeScope === 'NAVI' ? 'NAVI' : 'NVRC');
+          mCompanyEl.disabled = Boolean(u && u.company !== 'BOTH');
+        }
         document.getElementById('mElecStart').value = 0;
         document.getElementById('mElecEnd').value = 0;
         document.getElementById('mElecRate').value = 3500;
@@ -3829,8 +3856,9 @@ NOTIFY pgrst, 'reload schema';</pre>
 
     function saveMonthForm(e) {
       e.preventDefault();
+      const u = getCurrentUser();
       const month = (document.getElementById('mMonth').value || '').trim();
-      const company = document.getElementById('mCompany').value;
+      const company = (u && u.company !== 'BOTH') ? u.company : document.getElementById('mCompany').value;
       const key = `${company}|${month}`;
 
       appState.monthlyCosts[key] = {
