@@ -922,9 +922,15 @@ NOTIFY pgrst, 'reload schema';</pre>
       </div>
       <form id="assetForm" class="space-y-3.5">
         <input type="hidden" id="assetEditId" />
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Tên xe / hạng mục</label>
-          <input id="assetName" type="text" required placeholder="VD: Xe Ford Transit" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Tên xe / hạng mục</label>
+            <input id="assetName" type="text" required placeholder="VD: Xe Ford Transit" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Biển số xe (nếu có)</label>
+            <input id="assetPlate" type="text" placeholder="VD: 60C-123.45" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm uppercase" />
+          </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -1255,10 +1261,10 @@ NOTIFY pgrst, 'reload schema';</pre>
     ];
 
     const DEFAULT_ASSETS = [
-      { id: 'asset_ford', name: 'Xe Ford Transit', owner: 'NVRC', unit: 'km', rate: 3000 },
-      { id: 'asset_cau', name: 'Xe Cẩu tự hành', owner: 'NVRC', unit: 'km', rate: 8000 },
-      { id: 'asset_nc_navi', name: 'Công hỗ trợ lái xe / kỹ thuật NAVI', owner: 'NAVI', unit: 'công', rate: 500000 },
-      { id: 'asset_advance', name: 'Tạm ứng / Chi hộ trực tiếp', owner: 'BOTH', unit: 'lần', rate: 0 }
+      { id: 'asset_ford', name: 'Xe Ford Transit', plate: '60C-568.79', owner: 'NVRC', unit: 'km', rate: 3000 },
+      { id: 'asset_cau', name: 'Xe Cẩu tự hành', plate: '60C-345.12', owner: 'NVRC', unit: 'km', rate: 8000 },
+      { id: 'asset_nc_navi', name: 'Công hỗ trợ lái xe / kỹ thuật NAVI', plate: '', owner: 'NAVI', unit: 'công', rate: 500000 },
+      { id: 'asset_advance', name: 'Tạm ứng / Chi hộ trực tiếp', plate: '', owner: 'BOTH', unit: 'lần', rate: 0 }
     ];
 
     const DEFAULT_TASK_TYPES = [
@@ -1379,6 +1385,8 @@ NOTIFY pgrst, 'reload schema';</pre>
     let supabasePollTimer = null;
     let supabaseSyncTimer = null;
     let isApplyingRemoteUpdate = false;
+    let isPushingToCloud = false;
+    let hasPendingLocalChanges = false;
     let lastSyncTimeStr = 'Chưa đồng bộ';
     let costChartInstance = null;
 
@@ -1483,14 +1491,17 @@ NOTIFY pgrst, 'reload schema';</pre>
         } else {
           sessionStorage.removeItem(SESSION_USER_KEY);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error('Lỗi lưu localStorage:', e);
+      }
 
       if (!skipCloudSync && !isApplyingRemoteUpdate && isSupabaseConfigured()) {
+        hasPendingLocalChanges = true;
         updateSupabaseBadge('syncing', 'Đang lưu Cloud...');
         clearTimeout(supabaseSyncTimer);
         supabaseSyncTimer = setTimeout(() => {
           pushStateToSupabase(false);
-        }, 400);
+        }, 120);
       }
     }
 
@@ -1882,10 +1893,17 @@ NOTIFY pgrst, 'reload schema';</pre>
 
     async function pushStateToSupabase(notify = false) {
       if (!isSupabaseConfigured()) return false;
+      isPushingToCloud = true;
       try {
         const u = getCurrentUser();
+        const pushTimestamp = Date.now();
+        appState.lastUpdated = pushTimestamp;
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(Object.assign({}, appState, { currentUserId: null })));
+        } catch (e) {}
+
         const payloadToSave = {
-          lastUpdated: appState.lastUpdated || Date.now(),
+          lastUpdated: pushTimestamp,
           users: appState.users,
           assets: appState.assets,
           taskTypes: appState.taskTypes,
@@ -1916,6 +1934,7 @@ NOTIFY pgrst, 'reload schema';</pre>
           return false;
         }
 
+        hasPendingLocalChanges = false;
         updateSupabaseBadge('online', 'Supabase Online (5s)');
         updateLastSyncTimestamp();
         if (notify) {
@@ -1927,11 +1946,16 @@ NOTIFY pgrst, 'reload schema';</pre>
         updateSupabaseBadge('error', 'Lỗi đẩy Cloud');
         if (notify) showSupabaseBoxMessage(`Lỗi đẩy dữ liệu: ${err.message}`, false);
         return false;
+      } finally {
+        isPushingToCloud = false;
       }
     }
 
     async function pullStateFromSupabase(notify = false) {
       if (!isSupabaseConfigured()) return { ok: false, error: 'Chưa cấu hình Supabase' };
+      if (!notify && (isPushingToCloud || hasPendingLocalChanges)) {
+        return { ok: true, skipped: true };
+      }
       try {
         const endpoint = `${supabaseConfig.url}/rest/v1/${encodeURIComponent(supabaseConfig.table)}?id=eq.${encodeURIComponent(supabaseConfig.recordId)}&select=id,payload,updated_at`;
         const res = await fetch(endpoint, {
@@ -1954,6 +1978,8 @@ NOTIFY pgrst, 'reload schema';</pre>
         if (!Array.isArray(rows) || rows.length === 0 || !rows[0].payload) {
           if (notify) {
             showSupabaseBoxMessage('Kết nối thành công nhưng trên Cloud chưa có bản ghi nào. Hãy bấm "Lưu & Đồng bộ lên Cloud".', true);
+          } else if (hasPendingLocalChanges || Object.keys(appState.monthlyCosts || {}).length > 0) {
+            await pushStateToSupabase(false);
           }
           return { ok: true };
         }
@@ -1962,7 +1988,7 @@ NOTIFY pgrst, 'reload schema';</pre>
         const remoteTs = Number(remotePayload.lastUpdated || 0);
         const localTs = Number(appState.lastUpdated || 0);
 
-        if (notify || remoteTs > localTs) {
+        if (notify || (!hasPendingLocalChanges && remoteTs > localTs + 1000)) {
           isApplyingRemoteUpdate = true;
           const remoteUsers = Array.isArray(remotePayload.users) && remotePayload.users.length ? remotePayload.users : appState.users;
           if (!remoteUsers.some((u) => u.username.toLowerCase() === 'admin')) {
@@ -1990,6 +2016,8 @@ NOTIFY pgrst, 'reload schema';</pre>
             showSupabaseBoxMessage('Đã tải và cập nhật dữ liệu mới nhất từ Supabase Cloud!', true);
             showToast('Đã cập nhật dữ liệu từ Cloud!', 'success');
           }
+        } else if (localTs > remoteTs + 1000 && !notify) {
+          await pushStateToSupabase(false);
         }
         return { ok: true };
       } catch (err) {
@@ -2152,7 +2180,12 @@ NOTIFY pgrst, 'reload schema';</pre>
     }
 
     function getAssetById(assetId) {
-      return appState.assets.find((a) => a.id === assetId) || { id: assetId, name: 'Khác', owner: 'NVRC', unit: 'lần', rate: 0 };
+      return appState.assets.find((a) => a.id === assetId) || { id: assetId, name: 'Khác', plate: '', owner: 'NVRC', unit: 'lần', rate: 0 };
+    }
+
+    function formatAssetDisplay(asset) {
+      if (!asset) return 'Khác';
+      return asset.plate ? `${asset.name} (${asset.plate})` : asset.name;
     }
 
     function calcXeEntryTotal(entry) {
@@ -2896,7 +2929,7 @@ NOTIFY pgrst, 'reload schema';</pre>
         if (fDir !== 'ALL' && x.direction !== fDir) return false;
         if (fSearch) {
           const asset = getAssetById(x.assetId);
-          const hay = `${x.date} ${x.desc} ${x.odo} ${asset.name}`.toLowerCase();
+          const hay = `${x.date} ${x.desc} ${x.odo} ${asset.name} ${asset.plate || ''}`.toLowerCase();
           if (!hay.includes(fSearch)) return false;
         }
         return true;
@@ -2967,7 +3000,10 @@ NOTIFY pgrst, 'reload schema';</pre>
                         <div class="font-semibold text-slate-900">${escapeHtml(x.desc)}</div>
                         ${x.odo ? `<div class="text-[11px] text-slate-400">ODO: ${escapeHtml(x.odo)}</div>` : ''}
                       </td>
-                      <td class="py-2.5 px-2 text-slate-700">${escapeHtml(asset.name)}</td>
+                      <td class="py-2.5 px-2 text-slate-700">
+                        <div>${escapeHtml(asset.name)}</div>
+                        ${asset.plate ? `<span class="inline-block mt-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] font-bold">${escapeHtml(asset.plate)}</span>` : ''}
+                      </td>
                       <td class="py-2.5 px-2 text-right font-medium">${x.qty ? `${formatQtyVN(x.qty)} ${escapeHtml(asset.unit)}` : '-'}</td>
                       <td class="py-2.5 px-2 text-right text-slate-600">${extras ? formatCurrency(extras) : '0 đ'}</td>
                       <td class="py-2.5 px-2.5 text-right font-bold text-slate-900">${formatCurrency(total)}</td>
@@ -2998,7 +3034,7 @@ NOTIFY pgrst, 'reload schema';</pre>
                   <div class="flex items-start justify-between gap-2">
                     <div>
                       <div class="text-xs font-bold text-slate-900">${escapeHtml(x.desc)}</div>
-                      <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(x.date)} • ${escapeHtml(asset.name)}</div>
+                      <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(x.date)} • ${escapeHtml(formatAssetDisplay(asset))}</div>
                     </div>
                     <span class="px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${x.direction === 'NVRC_TO_NAVI' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700'}">
                       ${x.direction === 'NVRC_TO_NAVI' ? 'NVRC → NAVI' : 'NAVI → NVRC'}
@@ -3036,7 +3072,7 @@ NOTIFY pgrst, 'reload schema';</pre>
       const assetSel = document.getElementById('xeAssetId');
       if (assetSel) {
         assetSel.innerHTML = appState.assets.map((a) => `
-          <option value="${escapeHtml(a.id)}">${escapeHtml(a.name)} (${formatCurrency(a.rate)}/${escapeHtml(a.unit)})</option>
+          <option value="${escapeHtml(a.id)}">${escapeHtml(formatAssetDisplay(a))} (${formatCurrency(a.rate)}/${escapeHtml(a.unit)})</option>
         `).join('');
       }
 
@@ -3148,7 +3184,8 @@ NOTIFY pgrst, 'reload schema';</pre>
                   <span class="text-[11px] text-slate-400">ĐVT: ${escapeHtml(a.unit)}</span>
                 </div>
                 <h3 class="text-sm font-bold text-slate-900 mt-2">${escapeHtml(a.name)}</h3>
-                <div class="text-base font-extrabold text-blue-700 mt-1 tabular-nums">${formatCurrency(a.rate)} / ${escapeHtml(a.unit)}</div>
+                ${a.plate ? `<div class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-slate-900 text-white font-mono text-[11px] font-bold tracking-wider">${escapeHtml(a.plate)}</div>` : ''}
+                <div class="text-base font-extrabold text-blue-700 mt-1.5 tabular-nums">${formatCurrency(a.rate)} / ${escapeHtml(a.unit)}</div>
               </div>
               <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200/70">
                 ${canEdit ? `<button onclick="openAssetModal('${escapeHtml(a.id)}')" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-blue-50 text-xs font-semibold text-slate-700">Sửa</button>` : ''}
@@ -3167,6 +3204,7 @@ NOTIFY pgrst, 'reload schema';</pre>
         document.getElementById('assetEditId').value = item.id;
         document.getElementById('assetModalTitle').textContent = 'Sửa Danh Mục Xe & Tài Sản';
         document.getElementById('assetName').value = item.name;
+        document.getElementById('assetPlate').value = item.plate || '';
         document.getElementById('assetOwner').value = item.owner;
         document.getElementById('assetUnit').value = item.unit;
         document.getElementById('assetRate').value = formatNumberVN(item.rate, 0);
@@ -3174,6 +3212,7 @@ NOTIFY pgrst, 'reload schema';</pre>
         document.getElementById('assetEditId').value = '';
         document.getElementById('assetModalTitle').textContent = 'Thêm Danh Mục Xe & Tài Sản';
         document.getElementById('assetName').value = '';
+        document.getElementById('assetPlate').value = '';
         document.getElementById('assetOwner').value = 'NVRC';
         document.getElementById('assetUnit').value = 'km';
         document.getElementById('assetRate').value = formatNumberVN(3000, 0);
@@ -3185,19 +3224,21 @@ NOTIFY pgrst, 'reload schema';</pre>
       e.preventDefault();
       const editId = document.getElementById('assetEditId').value;
       const name = (document.getElementById('assetName').value || '').trim();
+      const plate = (document.getElementById('assetPlate').value || '').trim().toUpperCase();
       const owner = document.getElementById('assetOwner').value;
       const unit = (document.getElementById('assetUnit').value || '').trim();
       const rate = parseMoney(document.getElementById('assetRate').value);
+      const displayLabel = plate ? `${name} (${plate})` : name;
 
       if (editId) {
         const idx = appState.assets.findIndex((a) => a.id === editId);
         if (idx !== -1) {
-          appState.assets[idx] = { ...appState.assets[idx], name, owner, unit, rate };
-          addAuditLog('Sửa danh mục xe/tài sản', `${name}: ${formatCurrency(rate)}/${unit}`);
+          appState.assets[idx] = { ...appState.assets[idx], name, plate, owner, unit, rate };
+          addAuditLog('Sửa danh mục xe/tài sản', `${displayLabel}: ${formatCurrency(rate)}/${unit}`);
         }
       } else {
-        appState.assets.push({ id: 'asset_' + Date.now(), name, owner, unit, rate });
-        addAuditLog('Thêm danh mục xe/tài sản', `${name}: ${formatCurrency(rate)}/${unit}`);
+        appState.assets.push({ id: 'asset_' + Date.now(), name, plate, owner, unit, rate });
+        addAuditLog('Thêm danh mục xe/tài sản', `${displayLabel}: ${formatCurrency(rate)}/${unit}`);
       }
 
       saveState();
@@ -3852,6 +3893,7 @@ NOTIFY pgrst, 'reload schema';</pre>
           'Tháng': x.month,
           'Nội dung': x.desc,
           'Hạng mục': asset.name,
+          'Biển số xe': asset.plate || '',
           'Số lượng': x.qty,
           'ĐVT': asset.unit,
           'Phụ cấp': x.allowance,
