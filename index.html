@@ -738,7 +738,7 @@
         <input type="hidden" id="aEditId" />
         <div>
           <label class="block font-bold text-slate-700 mb-1">Tên xe / Tài sản</label>
-          <input id="aName" type="text" required placeholder="Xe tải Cẩu" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
+          <input id="aName" type="text" required placeholder="Xe tải Kia K250" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -929,10 +929,10 @@
     const DEFAULT_USERS = [
       { username: 'admin', pass: '1234', name: 'Admin Tổng (2 Bên)', company: 'BOTH', role: 'ADMIN' },
       { username: 'admin2ben', pass: '1234', name: 'Quản Trị Hệ Thống 2 Bên', company: 'BOTH', role: 'ADMIN' },
-      { username: 'navi_gd', pass: '1234', name: 'Trưởng Đơn Vị NAVI', company: 'NAVI', role: 'MANAGER' },
+      { username: 'navi_tp', pass: '1234', name: 'Trưởng Đơn Vị NAVI', company: 'NAVI', role: 'MANAGER' },
       { username: 'kt_navi', pass: '1234', name: 'Kế Toán NAVI', company: 'NAVI', role: 'STAFF' },
-      { username: 'nvrc_gd', pass: '1234', name: 'Trưởng Đơn Vị NVRC', company: 'NVRC', role: 'MANAGER' },
-      { username: 'kt_nvrc', pass: '123', name: 'Kế Toán NVRC', company: 'NVRC', role: 'STAFF' }
+      { username: 'nvrc_tp', pass: '1234', name: 'Trưởng Đơn Vị NVRC', company: 'NVRC', role: 'MANAGER' },
+      { username: 'kt_nvrc', pass: '1234', name: 'Kế Toán NVRC', company: 'NVRC', role: 'STAFF' }
     ];
 
     const DEFAULT_TASK_TYPES = [
@@ -943,10 +943,9 @@
     ];
 
     const DEFAULT_ASSETS = [
-      { id: 'A1', name: 'Xe tải Cẩu', plate: '60C-589.12', owner: 'NVRC', unit: 'km', rate: 12000 },
+      { id: 'A1', name: 'Xe tải Kia K250', plate: '60C-589.12', owner: 'NVRC', unit: 'km', rate: 12000 },
       { id: 'A2', name: 'Xe bán tải Ford Ranger', plate: '60C-412.88', owner: 'NVRC', unit: 'km', rate: 10000 },
       { id: 'A3', name: 'Nhân sự kỹ thuật hỗ trợ', plate: 'Nhân sự', owner: 'NAVI', unit: 'công', rate: 550000 }
-      { id: 'A4', name: 'Nhân sự kỹ thuật hỗ trợ', plate: 'Nhân sự', owner: 'NVRC', unit: 'công', rate: 550000 }
     ];
 
     const DEFAULT_MONTHLY_COSTS = {
