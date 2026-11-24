@@ -155,6 +155,15 @@
               <span class="hidden sm:inline">Xuất Excel</span>
             </button>
 
+            <!-- Sao lưu / Khôi phục JSON nhanh -->
+            <button onclick="exportBackupJson()" title="Tải file sao lưu dữ liệu (.json)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold">
+              <i data-lucide="download" class="w-4 h-4"></i>
+            </button>
+            <button onclick="document.getElementById('backupFileInput').click()" title="Khôi phục từ file sao lưu (.json)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold">
+              <i data-lucide="upload" class="w-4 h-4"></i>
+            </button>
+            <input id="backupFileInput" type="file" accept=".json" onchange="importBackupJson(event)" class="hidden" />
+
             <!-- Đăng xuất PC -->
             <button onclick="logoutUser()" class="hidden lg:flex px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold items-center gap-1.5">
               <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
@@ -278,6 +287,23 @@
           </div>
           <!-- Thẻ Mobile -->
           <div id="summaryMobileCards" class="md:hidden space-y-3"></div>
+        </div>
+
+        <!-- Biểu đồ cơ cấu chi phí vận hành theo tháng -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+            <div>
+              <h3 class="text-sm sm:text-base font-extrabold text-slate-900">Biểu Đồ Tỷ Trọng Chi Phí Vận Hành Theo Tháng</h3>
+              <p class="text-[11px] text-slate-500">So sánh trực quan Điện, Vệ sinh + Thuê VP, NC thuê ngoài và Hỗ trợ 2 bên</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-[11px] font-bold">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-xs bg-blue-500"></span>Tiền điện</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-xs bg-slate-600"></span>VS + Thuê VP</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-xs bg-indigo-500"></span>NC thuê ngoài</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-xs bg-emerald-500"></span>Hỗ trợ 2 bên</span>
+            </div>
+          </div>
+          <div id="monthlyChartContainer" class="space-y-3"></div>
         </div>
 
         <!-- 2 Bảng chi tiết nhanh ngay tại Tab 1 -->
@@ -473,7 +499,12 @@
             </div>
             <div>
               <label class="block text-[11px] font-bold text-slate-300 mb-1">2. Anon / Publishable Public Key</label>
-              <input id="cfgSupaKey" type="password" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-mono text-white" />
+              <div class="relative">
+                <input id="cfgSupaKey" type="password" class="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-mono text-white" />
+                <button type="button" onclick="toggleCfgSupaKey()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1">
+                  <i data-lucide="eye" class="w-4 h-4"></i>
+                </button>
+              </div>
             </div>
             <div>
               <label class="block text-[11px] font-bold text-slate-300 mb-1">3. Table Name</label>
@@ -487,7 +518,7 @@
 
           <div id="cloudSettingsFeedback" class="hidden mb-3 p-3 rounded-xl text-xs font-semibold"></div>
 
-          <div class="flex flex-wrap items-center gap-2.5">
+          <div class="flex flex-wrap items-center gap-2.5 mb-4">
             <button onclick="saveCloudConfigFromTab()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5">
               <i data-lucide="refresh-cw" class="w-4 h-4"></i>
               <span>Lưu & Đồng bộ ngay</span>
@@ -496,6 +527,79 @@
               <i data-lucide="download" class="w-4 h-4"></i>
               <span>Tải index.html gắn sẵn Key</span>
             </button>
+            <button onclick="exportBackupJson()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold flex items-center gap-1.5">
+              <i data-lucide="file-json" class="w-4 h-4 text-amber-400"></i>
+              <span>Sao lưu dữ liệu (.json)</span>
+            </button>
+            <button onclick="document.getElementById('backupFileInput').click()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold flex items-center gap-1.5">
+              <i data-lucide="folder-up" class="w-4 h-4 text-emerald-400"></i>
+              <span>Khôi phục từ file (.json)</span>
+            </button>
+          </div>
+
+          <!-- Hướng dẫn SQL khởi tạo bảng Supabase -->
+          <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs">
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="font-bold text-slate-200">Mã SQL khởi tạo bảng trên Supabase (Chạy 1 lần trong SQL Editor)</span>
+              <button type="button" onclick="copySupabaseSql()" class="px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-emerald-300 font-bold text-[11px] flex items-center gap-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>Copy SQL</span>
+              </button>
+            </div>
+            <pre id="supaSqlCode" class="text-[11px] font-mono text-slate-300 overflow-x-auto leading-relaxed">CREATE TABLE IF NOT EXISTS public.nv_nvrc_app_state (
+  id TEXT PRIMARY KEY,
+  payload JSONB NOT NULL,
+  updated_by TEXT,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE public.nv_nvrc_app_state ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);</pre>
+          </div>
+        </div>
+
+        <!-- Ma trận phân quyền hệ thống -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
+          <div class="mb-3">
+            <h3 class="text-base font-extrabold text-slate-900">Ma Trận Phân Quyền Theo Vai Trò & Đơn Vị</h3>
+            <p class="text-xs text-slate-500">Quy định phạm vi xem dữ liệu, lập chứng từ và ký duyệt điện tử giữa NAVI và NVRC</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-50 border-y border-slate-200 text-slate-600 font-bold uppercase text-[11px]">
+                  <th class="py-2.5 px-3">Chức năng hệ thống</th>
+                  <th class="py-2.5 px-3 text-center">Admin Tổng (2 Bên)</th>
+                  <th class="py-2.5 px-3 text-center">Trưởng Bộ Phận (NAVI / NVRC)</th>
+                  <th class="py-2.5 px-3 text-center">Kế Toán (NAVI / NVRC)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2.5 px-3 font-semibold">Chi phí vận hành & NC thuê ngoài nội bộ</td>
+                  <td class="py-2.5 px-3 text-center font-bold text-emerald-600">Xem & Sửa cả 2 bên</td>
+                  <td class="py-2.5 px-3 text-center font-bold text-blue-700">Chỉ xem & sửa đúng bên mình</td>
+                  <td class="py-2.5 px-3 text-center font-bold text-blue-700">Chỉ xem & nhập đúng bên mình</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-3 font-semibold">Hỗ trợ Xe & Nhân công qua lại (NAVI ↔ NVRC)</td>
+                  <td class="py-2.5 px-3 text-center font-bold text-emerald-600">Toàn quyền 2 chiều</td>
+                  <td class="py-2.5 px-3 text-center font-bold text-emerald-600">Xem & đối soát cả 2 chiều</td>
+                  <td class="py-2.5 px-3 text-center font-bold text-emerald-600">Xem & nhập liệu cả 2 chiều</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-3 font-semibold">Ký duyệt điện tử Biên bản duyệt chi & Gạch nợ</td>
+                  <td class="py-2.5 px-3 text-center font-bold text-emerald-600">Được ký duyệt</td>
+                  <td class="py-2.5 px-3 text-center font-bold text-emerald-600">Được ký duyệt</td>
+                  <td class="py-2.5 px-3 text-center font-semibold text-amber-600">Lập biên bản (Chờ Trưởng BP ký)</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-3 font-semibold">Quản lý Tài khoản, Phân quyền & Cấu hình Cloud</td>
+                  <td class="py-2.5 px-3 text-center font-bold text-emerald-600">Toàn quyền quản trị</td>
+                  <td class="py-2.5 px-3 text-center text-slate-400">Chỉ xem</td>
+                  <td class="py-2.5 px-3 text-center text-slate-400">Chỉ xem</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -1518,6 +1622,39 @@
       }
     }
 
+    function renderMonthlyChart(rows) {
+      const container = document.getElementById('monthlyChartContainer');
+      if (!container) return;
+      if (!rows || !rows.length) {
+        container.innerHTML = '<div class="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">Chưa có dữ liệu biểu đồ</div>';
+        return;
+      }
+      const maxTotal = Math.max(...rows.map((r) => r.grandTotal), 1);
+      container.innerHTML = rows.slice(0, 8).map((r) => {
+        const pElec = Math.max(0, (r.elecTotal / maxTotal) * 100);
+        const pFixed = Math.max(0, (r.fixedTotal / maxTotal) * 100);
+        const pNc = Math.max(0, (r.ncTotal / maxTotal) * 100);
+        const pXe = Math.max(0, (r.xeTotal / maxTotal) * 100);
+        return `
+          <div class="space-y-1 text-xs">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                <span class="font-extrabold text-slate-800">Tháng ${r.month}</span>
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold ${r.company === 'NAVI' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}">${r.company}</span>
+              </div>
+              <span class="font-extrabold text-slate-900">${formatCurrency(r.grandTotal)}</span>
+            </div>
+            <div class="w-full h-3.5 rounded-full bg-slate-100 overflow-hidden flex">
+              <div style="width:${pElec.toFixed(2)}%" title="Tiền điện: ${formatCurrency(r.elecTotal)}" class="bg-blue-500 h-full"></div>
+              <div style="width:${pFixed.toFixed(2)}%" title="VS + Thuê VP: ${formatCurrency(r.fixedTotal)}" class="bg-slate-600 h-full"></div>
+              <div style="width:${pNc.toFixed(2)}%" title="NC thuê ngoài: ${formatCurrency(r.ncTotal)}" class="bg-indigo-500 h-full"></div>
+              <div style="width:${pXe.toFixed(2)}%" title="Hỗ trợ 2 bên: ${formatCurrency(r.xeTotal)}" class="bg-emerald-500 h-full"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     function renderSummaryTable() {
       const rows = getScopedMonthlyRows();
       const monthSel = document.getElementById('filterSummaryMonth');
@@ -1532,6 +1669,7 @@
       if (!filtered.length) {
         tbody.innerHTML = '<tr><td colspan="9" class="py-6 text-center text-slate-400">Chưa có dữ liệu chi phí tháng cho đơn vị này</td></tr>';
         mobileBox.innerHTML = '<div class="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">Chưa có dữ liệu chi phí tháng</div>';
+        renderMonthlyChart([]);
         return;
       }
 
@@ -1572,90 +1710,110 @@
           </div>
         </div>
       `).join('');
+
+      renderMonthlyChart(filtered);
     }
 
     function renderNcTables() {
-      const scoped = getScopedNcEntries();
       const scope = getEffectiveScope();
+      const scopedList = getScopedNcEntries();
 
+      // 1. Cập nhật tiêu đề & danh sách chi tiết nhanh ngay tại Tab 1
       const subTitle = document.getElementById('tab1NcSubTitle');
+      const subDesc = document.getElementById('tab1NcSubDesc');
       if (subTitle) {
-        subTitle.textContent = scope === 'BOTH' ? 'Nhân Công Thuê Ngoài (Chi tiết - Cả 2 bên)' : `Nhân Công Thuê Ngoài (Chi tiết - ${scope})`;
+        subTitle.textContent = scope === 'BOTH'
+          ? 'Nhân Công Thuê Ngoài (Chi tiết — Cả 2 bên)'
+          : `Nhân Công Thuê Ngoài (Chi tiết — Riêng ${scope})`;
+      }
+      if (subDesc) {
+        subDesc.textContent = scope === 'BOTH'
+          ? 'Hiển thị toàn bộ nhân công thuê ngoài của NAVI & NVRC'
+          : `Chỉ hiển thị dữ liệu nhân công thuê ngoài của đơn vị ${scope}`;
       }
 
-      // Cập nhật bộ lọc tháng & loại công việc ở Tab 2
+      const subBox = document.getElementById('ncSubListContainer');
+      if (subBox) {
+        if (!scopedList.length) {
+          subBox.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">Chưa có dữ liệu nhân công thuê ngoài của ${scope === 'BOTH' ? '2 bên' : scope}</div>`;
+        } else {
+          subBox.innerHTML = scopedList.slice().reverse().slice(0, 12).map((n) => {
+            const net = (Number(n.amount) || 0) - (Number(n.mealDeduct) || 0);
+            const isPaid = n.status === 'Đã thanh toán';
+            return `
+              <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-2 text-xs">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold ${n.company === 'NAVI' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">${n.company}</span>
+                    <span class="font-extrabold text-slate-900">${n.worker}</span>
+                    <span class="text-[11px] text-slate-500">• ${n.task}</span>
+                  </div>
+                  <div class="text-[11px] text-slate-500 truncate mt-0.5">${n.date} • ${n.project}</div>
+                </div>
+                <div class="text-right shrink-0">
+                  <div class="font-extrabold text-indigo-700">${formatCurrency(net)}</div>
+                  <button onclick="toggleNcStatus(${n.id})" class="text-[10px] font-bold ${isPaid ? 'text-emerald-600' : 'text-amber-600'} hover:underline">${n.status}</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // 2. Nạp bộ lọc Tháng & Loại công việc ở Tab 2
       const mSel = document.getElementById('filterNcMonth');
       const tSel = document.getElementById('filterNcTask');
+      if (!mSel || !tSel) return;
+
       const curM = mSel.value || 'ALL';
       const curT = tSel.value || 'ALL';
-      const months = [...new Set(scoped.map((n) => n.month))];
-      mSel.innerHTML = '<option value="ALL">Tất cả tháng</option>' + months.map((m) => `<option value="${m}" ${m === curM ? 'selected' : ''}>Tháng ${m}</option>`).join('');
-      tSel.innerHTML = '<option value="ALL">Tất cả loại công việc</option>' + appState.taskTypes.map((t) => `<option value="${t.name}" ${t.name === curT ? 'selected' : ''}>${t.name}</option>`).join('');
+      const curS = document.getElementById('filterNcStatus')?.value || 'ALL';
+      const searchQ = (document.getElementById('filterNcSearch')?.value || '').trim().toLowerCase();
 
-      const stFilter = document.getElementById('filterNcStatus').value || 'ALL';
-      const qFilter = (document.getElementById('filterNcSearch').value || '').trim().toLowerCase();
+      const uniqueMonths = [...new Set(scopedList.map((n) => n.month))];
+      mSel.innerHTML = '<option value="ALL">Tất cả tháng</option>' + uniqueMonths.map((m) => `<option value="${m}" ${m === curM ? 'selected' : ''}>Tháng ${m}</option>`).join('');
 
-      const filtered = scoped.filter((n) => {
+      const uniqueTasks = [...new Set([...appState.taskTypes.map((t) => t.name), ...scopedList.map((n) => n.task)])];
+      tSel.innerHTML = '<option value="ALL">Tất cả loại công việc</option>' + uniqueTasks.map((t) => `<option value="${t}" ${t === curT ? 'selected' : ''}>${t}</option>`).join('');
+
+      const filtered = scopedList.filter((n) => {
         if (curM !== 'ALL' && n.month !== curM) return false;
         if (curT !== 'ALL' && n.task !== curT) return false;
-        if (stFilter !== 'ALL' && n.status !== stFilter) return false;
-        if (qFilter && !(`${n.worker} ${n.project} ${n.task}`.toLowerCase().includes(qFilter))) return false;
+        if (curS !== 'ALL' && n.status !== curS) return false;
+        if (searchQ) {
+          const hay = `${n.worker} ${n.project} ${n.task} ${n.date}`.toLowerCase();
+          if (!hay.includes(searchQ)) return false;
+        }
         return true;
       });
 
-      // Bảng chi tiết nhanh tại Tab 1 (chỉ hiển thị đúng bên của tài khoản)
-      const subBox = document.getElementById('ncSubListContainer');
-      if (!scoped.length) {
-        subBox.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">Đơn vị ${scope === 'BOTH' ? '' : scope} chưa có dữ liệu nhân công thuê ngoài</div>`;
-      } else {
-        subBox.innerHTML = scoped.slice().reverse().slice(0, 15).map((n) => {
-          const net = (Number(n.amount) || 0) - (Number(n.mealDeduct) || 0);
-          return `
-            <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-2 text-xs">
-              <div class="min-w-0">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="font-extrabold text-slate-900">${n.worker}</span>
-                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700">${n.task}</span>
-                  <span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold ${n.company === 'NAVI' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">${n.company}</span>
-                </div>
-                <div class="text-[11px] text-slate-500 truncate mt-0.5">${n.date} • ${n.project}</div>
-              </div>
-              <div class="text-right shrink-0">
-                <div class="font-extrabold text-slate-900">${formatCurrency(net)}</div>
-                <span class="text-[10px] font-bold ${n.status === 'Đã thanh toán' ? 'text-emerald-600' : 'text-amber-600'}">${n.status}</span>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      // Bảng đầy đủ tại Tab 2
       const tbody = document.getElementById('ncTableBody');
       const mobileBox = document.getElementById('ncMobileCards');
       if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="10" class="py-6 text-center text-slate-400">Không có dữ liệu nhân công phù hợp</td></tr>';
-        mobileBox.innerHTML = '<div class="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">Không có dữ liệu nhân công phù hợp</div>';
+        tbody.innerHTML = '<tr><td colspan="10" class="py-6 text-center text-slate-400">Không có dữ liệu nhân công thuê ngoài phù hợp</td></tr>';
+        mobileBox.innerHTML = '<div class="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">Không có dữ liệu nhân công thuê ngoài phù hợp</div>';
         return;
       }
 
       tbody.innerHTML = filtered.slice().reverse().map((n) => {
         const net = (Number(n.amount) || 0) - (Number(n.mealDeduct) || 0);
+        const isPaid = n.status === 'Đã thanh toán';
         return `
           <tr class="hover:bg-slate-50">
-            <td class="py-2.5 px-3 font-semibold">${n.date}</td>
-            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${n.company === 'NAVI' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}">${n.company}</span></td>
+            <td class="py-2.5 px-3 font-semibold whitespace-nowrap">${n.date}</td>
+            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[11px] font-extrabold ${n.company === 'NAVI' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}">${n.company}</span></td>
             <td class="py-2.5 px-3 font-semibold text-slate-800">${n.project}</td>
-            <td class="py-2.5 px-3 font-bold text-slate-900">${n.worker}</td>
-            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold">${n.task}</span></td>
-            <td class="py-2.5 px-3 text-right">${formatCurrency(n.amount)}</td>
-            <td class="py-2.5 px-3 text-right text-rose-600">${n.mealDeduct ? '-' + formatCurrency(n.mealDeduct) : '0 đ'}</td>
-            <td class="py-2.5 px-3 text-right font-extrabold text-slate-900">${formatCurrency(net)}</td>
+            <td class="py-2.5 px-3 font-extrabold text-slate-900">${n.worker}</td>
+            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold text-[11px]">${n.task}</span></td>
+            <td class="py-2.5 px-3 text-right font-semibold">${formatCurrency(n.amount)}</td>
+            <td class="py-2.5 px-3 text-right text-rose-600 font-semibold">${n.mealDeduct ? '-' + formatCurrency(n.mealDeduct) : '0 đ'}</td>
+            <td class="py-2.5 px-3 text-right font-extrabold text-blue-700">${formatCurrency(net)}</td>
             <td class="py-2.5 px-3 text-center">
-              <button onclick="toggleNcStatus(${n.id})" class="px-2 py-1 rounded-lg text-[11px] font-bold ${n.status === 'Đã thanh toán' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${n.status}</button>
+              <button onclick="toggleNcStatus(${n.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${isPaid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${n.status}</button>
             </td>
             <td class="py-2.5 px-3 text-center whitespace-nowrap">
-              <button onclick="openNcModal(${n.id})" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 font-bold mr-1">Sửa</button>
-              <button onclick="deleteNcEntry(${n.id})" class="px-2 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold">Xóa</button>
+              <button onclick="openNcModal(${n.id})" class="px-2 py-1 rounded bg-slate-100 font-bold mr-1">Sửa</button>
+              <button onclick="deleteNcEntry(${n.id})" class="px-2 py-1 rounded bg-rose-50 text-rose-700 font-bold">Xóa</button>
             </td>
           </tr>
         `;
@@ -1663,21 +1821,22 @@
 
       mobileBox.innerHTML = filtered.slice().reverse().map((n) => {
         const net = (Number(n.amount) || 0) - (Number(n.mealDeduct) || 0);
+        const isPaid = n.status === 'Đã thanh toán';
         return `
           <div class="p-3.5 rounded-2xl border border-slate-200 bg-white space-y-2 text-xs">
             <div class="flex items-start justify-between gap-2">
               <div>
                 <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="px-2 py-0.5 rounded font-extrabold text-[10px] ${n.company === 'NAVI' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">${n.company}</span>
                   <span class="font-extrabold text-sm text-slate-900">${n.worker}</span>
                   <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold text-[10px]">${n.task}</span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${n.company === 'NAVI' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">${n.company}</span>
                 </div>
                 <p class="text-[11px] text-slate-500 mt-0.5">${n.date} • ${n.project}</p>
               </div>
-              <button onclick="toggleNcStatus(${n.id})" class="px-2.5 py-1 rounded-lg text-[10px] font-bold shrink-0 ${n.status === 'Đã thanh toán' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${n.status}</button>
+              <button onclick="toggleNcStatus(${n.id})" class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${n.status}</button>
             </div>
             <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-              <div>Thực lãnh: <b class="text-sm text-blue-700">${formatCurrency(net)}</b></div>
+              <div>Thực lãnh: <b class="text-sm text-blue-700">${formatCurrency(net)}</b> ${n.mealDeduct ? `<span class="text-[10px] text-rose-600">(trừ cơm ${formatCurrency(n.mealDeduct)})</span>` : ''}</div>
               <div class="flex gap-1.5">
                 <button onclick="openNcModal(${n.id})" class="px-3 py-1.5 rounded-xl bg-slate-100 font-bold">Sửa</button>
                 <button onclick="deleteNcEntry(${n.id})" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 font-bold">Xóa</button>
@@ -2677,6 +2836,70 @@
       a.download = 'index.html';
       a.click();
       showToast('Đã tải file index.html gắn sẵn cấu hình!');
+    }
+
+    function toggleCfgSupaKey() {
+      const inp = document.getElementById('cfgSupaKey');
+      if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function copySupabaseSql() {
+      const sqlEl = document.getElementById('supaSqlCode');
+      if (!sqlEl) return;
+      const ta = document.createElement('textarea');
+      ta.value = sqlEl.textContent;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('Đã sao chép mã SQL khởi tạo bảng Supabase!');
+    }
+
+    function exportBackupJson() {
+      const backupPayload = {
+        exportedAt: new Date().toISOString(),
+        app: 'THEODOI_HOTRO_NAVI_NVRC',
+        data: { ...appState, currentUserId: null }
+      };
+      const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: 'application/json;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Backup_NAVI_NVRC_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      showToast('Đã tải file sao lưu dữ liệu (.json)!');
+    }
+
+    function importBackupJson(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          const incoming = parsed && parsed.data ? parsed.data : parsed;
+          if (!incoming || (!incoming.ncEntries && !incoming.monthlyCosts)) {
+            showToast('File sao lưu không đúng định dạng!');
+            return;
+          }
+          appState = {
+            ...appState,
+            ...incoming,
+            currentUserId: appState.currentUserId,
+            activeScope: appState.activeScope,
+            activeTab: appState.activeTab,
+            users: normalizeUsersList(incoming.users),
+            ncEntries: migrateNcOwner(incoming.ncEntries),
+            vouchers: migrateDefaultVoucher(incoming.vouchers)
+          };
+          saveStateAndSync(`Khôi phục dữ liệu từ file sao lưu (${file.name})`);
+          showToast('Đã khôi phục dữ liệu & đồng bộ lên Cloud thành công!');
+        } catch (err) {
+          showToast('Lỗi đọc file JSON: ' + err.message);
+        } finally {
+          e.target.value = '';
+        }
+      };
+      reader.readAsText(file);
     }
 
     function exportFullExcel() {
