@@ -569,7 +569,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
                 <tr class="bg-slate-50 border-y border-slate-200 text-slate-600 font-bold uppercase text-[11px]">
                   <th class="py-2.5 px-3">Chức năng hệ thống</th>
                   <th class="py-2.5 px-3 text-center">Admin Tổng (2 Bên)</th>
-                  <th class="py-2.5 px-3 text-center">Trưởng Bộ Phận (NAVI / NVRC)</th>
+                  <th class="py-2.5 px-3 text-center">Trưởng Đơn Vị (NAVI / NVRC)</th>
                   <th class="py-2.5 px-3 text-center">Kế Toán (NAVI / NVRC)</th>
                 </tr>
               </thead>
@@ -590,7 +590,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
                   <td class="py-2.5 px-3 font-semibold">Ký duyệt điện tử Biên bản duyệt chi & Gạch nợ</td>
                   <td class="py-2.5 px-3 text-center font-bold text-emerald-600">Được ký duyệt</td>
                   <td class="py-2.5 px-3 text-center font-bold text-emerald-600">Được ký duyệt</td>
-                  <td class="py-2.5 px-3 text-center font-semibold text-amber-600">Lập biên bản (Chờ Trưởng BP ký)</td>
+                  <td class="py-2.5 px-3 text-center font-semibold text-amber-600">Lập biên bản (Chờ Trưởng ĐV ký)</td>
                 </tr>
                 <tr>
                   <td class="py-2.5 px-3 font-semibold">Quản lý Tài khoản, Phân quyền & Cấu hình Cloud</td>
@@ -1019,7 +1019,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
             <label class="block font-bold text-slate-700 mb-1">Vai trò *</label>
             <select id="uRole" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-bold">
               <option value="ACCOUNTANT">Kế toán</option>
-              <option value="MANAGER">Trưởng bộ phận (Ký duyệt)</option>
+              <option value="MANAGER">Trưởng đơn vị (Ký duyệt)</option>
               <option value="ADMIN">Admin Tổng</option>
             </select>
           </div>
@@ -1119,12 +1119,11 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
     // 3. DỮ LIỆU MẶC ĐỊNH (TOÀN BỘ NC THUÊ NGOÀI GÁN VỀ ĐƠN VỊ NAVI)
     // =========================================================================
     const DEFAULT_USERS = [
-      { id: 'u_admin', username: 'admin', password: '123', fullName: 'Admin Tổng (2 Bên)', company: 'BOTH', role: 'ADMIN' },
-      { id: 'u_admin2', username: 'admin2ben', password: '123', fullName: 'Quản Trị Hệ Thống 2 Bên', company: 'BOTH', role: 'ADMIN' },
-      { id: 'u_navi_tp', username: 'navi_tp', password: '123', fullName: 'Trưởng Bộ Phận NAVI', company: 'NAVI', role: 'MANAGER' },
-      { id: 'u_kt_navi', username: 'kt_navi', password: '123', fullName: 'Kế Toán NAVI', company: 'NAVI', role: 'ACCOUNTANT' },
-      { id: 'u_nvrc_tp', username: 'nvrc_tp', password: '123', fullName: 'Trưởng Bộ Phận NVRC', company: 'NVRC', role: 'MANAGER' },
-      { id: 'u_kt_nvrc', username: 'kt_nvrc', password: '123', fullName: 'Kế Toán NVRC', company: 'NVRC', role: 'ACCOUNTANT' }
+      { id: 'u_admin', username: 'admin', password: '1234', fullName: 'Admin Tổng (2 Bên)', company: 'BOTH', role: 'ADMIN' },
+      { id: 'u_navi_gd', username: 'navi_gd', password: '1234', fullName: 'Trưởng Đơn Vị NAVI', company: 'NAVI', role: 'MANAGER' },
+      { id: 'u_kt_navi', username: 'kt_navi', password: '1234', fullName: 'Kế Toán NAVI', company: 'NAVI', role: 'ACCOUNTANT' },
+      { id: 'u_nvrc_gd', username: 'nvrc_tp', password: '1234', fullName: 'Trưởng Đơn Vị NVRC', company: 'NVRC', role: 'MANAGER' },
+      { id: 'u_kt_nvrc', username: 'kt_nvrc', password: '1234', fullName: 'Kế Toán NVRC', company: 'NVRC', role: 'ACCOUNTANT' }
     ];
 
     const DEFAULT_TASK_TYPES = [
@@ -1277,7 +1276,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
           ...u,
           id: u.id || ('u_' + (u.username || Math.random().toString(36).slice(2))),
           fullName: u.fullName || u.name || (fallback ? fallback.fullName : u.username || 'Người dùng'),
-          password: u.password || u.pin || '123',
+          password: u.password || u.pin || '1234',
           company: u.company || 'NAVI',
           role: u.role || 'ACCOUNTANT'
         };
@@ -1476,7 +1475,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       document.getElementById('appShell').classList.remove('hidden');
 
       document.getElementById('currentUserName').textContent = user.fullName;
-      document.getElementById('currentUserRoleBadge').textContent = user.company === 'BOTH' ? 'ADMIN 2 BÊN' : `${user.company} • ${user.role === 'MANAGER' ? 'TRƯỞNG BP' : 'KẾ TOÁN'}`;
+      document.getElementById('currentUserRoleBadge').textContent = user.company === 'BOTH' ? 'ADMIN 2 BÊN' : `${user.company} • ${user.role === 'MANAGER' ? 'TRƯỞNG ĐV' : 'KẾ TOÁN'}`;
 
       const scopeWrap = document.getElementById('scopeSelectorWrapper');
       const lockedBadge = document.getElementById('lockedScopeBadge');
@@ -2411,7 +2410,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       const box = document.getElementById('usersListContainer');
       box.innerHTML = appState.users.map((u) => {
         const displayName = u.fullName || u.name || u.username;
-        const roleLabel = u.role === 'ADMIN' ? 'Admin Tổng' : (u.role === 'MANAGER' ? 'Trưởng BP' : 'Kế toán');
+        const roleLabel = u.role === 'ADMIN' ? 'Admin Tổng' : (u.role === 'MANAGER' ? 'Trưởng ĐV' : 'Kế toán');
         const isSelf = curUser && curUser.id === u.id;
         return `
         <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-2 text-xs">
