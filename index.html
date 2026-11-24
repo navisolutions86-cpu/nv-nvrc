@@ -127,7 +127,6 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            <!-- Bộ chọn đơn vị (chỉ Admin 2 bên được chuyển đổi) -->
             <div id="scopeSelectorWrapper" class="relative">
               <select id="companyScopeSelect" onchange="changeActiveScope(this.value)" class="pl-3 pr-8 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold cursor-pointer focus:outline-none">
                 <option value="BOTH">Cả 2 bên (NAVI + NVRC)</option>
@@ -137,25 +136,21 @@
             </div>
             <div id="lockedScopeBadge" class="hidden px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold"></div>
 
-            <!-- Trạng thái Cloud -->
             <button id="cloudStatusBtn" onclick="syncNowManual()" title="Bấm để đồng bộ ngay với Supabase" class="px-2.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
               <span>Cloud 5s</span>
             </button>
 
-            <!-- Thông tin tài khoản -->
             <div class="px-2.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200 flex items-center gap-2 text-xs">
               <span id="currentUserRoleBadge" class="px-2 py-0.5 rounded-md bg-slate-900 text-white font-extrabold text-[10px]">ADMIN</span>
               <span id="currentUserName" class="font-bold text-slate-800 max-w-[120px] sm:max-w-none truncate">Admin</span>
             </div>
 
-            <!-- Xuất Excel -->
             <button onclick="exportFullExcel()" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
               <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
               <span class="hidden sm:inline">Xuất Excel</span>
             </button>
 
-            <!-- Sao lưu / Khôi phục JSON nhanh -->
             <button onclick="exportBackupJson()" title="Tải file sao lưu dữ liệu (.json)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold">
               <i data-lucide="download" class="w-4 h-4"></i>
             </button>
@@ -164,7 +159,6 @@
             </button>
             <input id="backupFileInput" type="file" accept=".json" onchange="importBackupJson(event)" class="hidden" />
 
-            <!-- Đăng xuất PC -->
             <button onclick="logoutUser()" class="hidden lg:flex px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold items-center gap-1.5">
               <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
               <span>Đăng xuất</span>
@@ -172,7 +166,6 @@
           </div>
         </div>
 
-        <!-- Thanh 7 Tabs -->
         <nav class="mt-2.5 pt-2 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
           <button onclick="switchTab('tab1')" data-tab="tab1" class="tab-btn active px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
             <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
@@ -266,7 +259,6 @@
             </div>
           </div>
 
-          <!-- Bảng PC/iPad -->
           <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
@@ -285,11 +277,9 @@
               <tbody id="summaryTableBody" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
-          <!-- Thẻ Mobile -->
           <div id="summaryMobileCards" class="md:hidden space-y-3"></div>
         </div>
 
-        <!-- Biểu đồ cơ cấu chi phí vận hành theo tháng -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
             <div>
@@ -306,9 +296,7 @@
           <div id="monthlyChartContainer" class="space-y-3"></div>
         </div>
 
-        <!-- 2 Bảng chi tiết nhanh ngay tại Tab 1 -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <!-- NC Thuê ngoài chi tiết (Lọc chặt đúng bên đang xem) -->
           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
             <div class="flex items-center justify-between gap-2 mb-3">
               <div>
@@ -323,7 +311,6 @@
             <div id="ncSubListContainer" class="space-y-2 max-h-[360px] overflow-y-auto pr-1"></div>
           </div>
 
-          <!-- Hỗ trợ qua lại 2 bên gần nhất -->
           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
             <div class="flex items-center justify-between gap-2 mb-3">
               <div>
@@ -360,7 +347,6 @@
             </div>
           </div>
 
-          <!-- Bộ lọc -->
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 mb-4">
             <select id="filterNcMonth" onchange="renderNcTables()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white">
               <option value="ALL">Tất cả tháng</option>
@@ -376,7 +362,6 @@
             <input id="filterNcSearch" oninput="renderNcTables()" type="text" placeholder="Tìm tên nhân sự, công trình..." class="px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold" />
           </div>
 
-          <!-- Bảng PC/iPad -->
           <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
@@ -396,7 +381,6 @@
               <tbody id="ncTableBody" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
-          <!-- Thẻ Mobile -->
           <div id="ncMobileCards" class="md:hidden space-y-3"></div>
         </div>
       </section>
@@ -477,7 +461,6 @@
 
       <!-- TAB 6: PHÂN QUYỀN & HỆ THỐNG -->
       <section id="tab6" class="tab-panel hidden space-y-5">
-        <!-- Cấu hình Supabase Cloud -->
         <div class="bg-slate-900 text-white rounded-2xl p-4 sm:p-6 shadow-lg">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <div class="flex items-center gap-3">
@@ -537,7 +520,6 @@
             </button>
           </div>
 
-          <!-- Hướng dẫn SQL khởi tạo bảng Supabase -->
           <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs">
             <div class="flex items-center justify-between gap-2 mb-2">
               <span class="font-bold text-slate-200">Mã SQL khởi tạo bảng trên Supabase (Chạy 1 lần trong SQL Editor)</span>
@@ -557,7 +539,6 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
           </div>
         </div>
 
-        <!-- Ma trận phân quyền hệ thống -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
           <div class="mb-3">
             <h3 class="text-base font-extrabold text-slate-900">Ma Trận Phân Quyền Theo Vai Trò & Đơn Vị</h3>
@@ -603,7 +584,6 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
           </div>
         </div>
 
-        <!-- Quản lý tài khoản & Phân quyền -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <div>
@@ -638,10 +618,11 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
   <div id="monthModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end md:items-center justify-center p-0 md:p-4">
     <div class="bg-white w-full md:max-w-lg rounded-t-3xl md:rounded-3xl shadow-2xl p-5 sm:p-6 max-h-[92vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-        <h3 class="text-base font-extrabold text-slate-900">Cập Nhật Chi Phí Vận Hành Tháng</h3>
+        <h3 id="monthModalTitle" class="text-base font-extrabold text-slate-900">Cập Nhật Chi Phí Vận Hành Tháng</h3>
         <button onclick="closeModal('monthModal')" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <form onsubmit="saveMonthCosts(event)" class="space-y-3.5 text-xs">
+        <input type="hidden" id="mEditKey" />
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block font-bold text-slate-700 mb-1">Đơn vị *</label>
@@ -871,7 +852,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
     </div>
   </div>
 
-  <!-- MODAL 4: THÊM / SỬA XE & TÀI SẢN (CÓ BIỂN SỐ XE) -->
+  <!-- MODAL 4: THÊM / SỬA XE & TÀI SẢN -->
   <div id="assetModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end md:items-center justify-center p-0 md:p-4">
     <div class="bg-white w-full md:max-w-lg rounded-t-3xl md:rounded-3xl shadow-2xl p-5 sm:p-6 max-h-[92vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
@@ -929,6 +910,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       </form>
     </div>
   </div>
+
   <!-- MODAL 5: TẠO / SỬA BIÊN BẢN DUYỆT CHI -->
   <div id="voucherModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end md:items-center justify-center p-0 md:p-4">
     <div class="bg-white w-full md:max-w-xl rounded-t-3xl md:rounded-3xl shadow-2xl p-5 sm:p-6 max-h-[92vh] overflow-y-auto">
@@ -983,6 +965,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       </form>
     </div>
   </div>
+
   <!-- MODAL 6: THÊM / SỬA TÀI KHOẢN -->
   <div id="userModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end md:items-center justify-center p-0 md:p-4">
     <div class="bg-white w-full md:max-w-md rounded-t-3xl md:rounded-3xl shadow-2xl p-5 sm:p-6">
@@ -1119,11 +1102,12 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
     // 3. DỮ LIỆU MẶC ĐỊNH (TOÀN BỘ NC THUÊ NGOÀI GÁN VỀ ĐƠN VỊ NAVI)
     // =========================================================================
     const DEFAULT_USERS = [
-      { id: 'u_admin', username: 'admin', password: '1234', fullName: 'Admin Tổng (2 Bên)', company: 'BOTH', role: 'ADMIN' },
-      { id: 'u_navi_gd', username: 'navi_gd', password: '1234', fullName: 'Trưởng Đơn Vị NAVI', company: 'NAVI', role: 'MANAGER' },
-      { id: 'u_kt_navi', username: 'kt_navi', password: '1234', fullName: 'Kế Toán NAVI', company: 'NAVI', role: 'ACCOUNTANT' },
-      { id: 'u_nvrc_gd', username: 'nvrc_tp', password: '1234', fullName: 'Trưởng Đơn Vị NVRC', company: 'NVRC', role: 'MANAGER' },
-      { id: 'u_kt_nvrc', username: 'kt_nvrc', password: '1234', fullName: 'Kế Toán NVRC', company: 'NVRC', role: 'ACCOUNTANT' }
+      { id: 'u_admin', username: 'admin', password: '123', fullName: 'Admin Tổng (2 Bên)', company: 'BOTH', role: 'ADMIN' },
+      { id: 'u_admin2', username: 'admin2ben', password: '123', fullName: 'Quản Trị Hệ Thống 2 Bên', company: 'BOTH', role: 'ADMIN' },
+      { id: 'u_navi_tp', username: 'navi_tp', password: '123', fullName: 'Trưởng Đơn Vị NAVI', company: 'NAVI', role: 'MANAGER' },
+      { id: 'u_kt_navi', username: 'kt_navi', password: '123', fullName: 'Kế Toán NAVI', company: 'NAVI', role: 'ACCOUNTANT' },
+      { id: 'u_nvrc_tp', username: 'nvrc_tp', password: '123', fullName: 'Trưởng Đơn Vị NVRC', company: 'NVRC', role: 'MANAGER' },
+      { id: 'u_kt_nvrc', username: 'kt_nvrc', password: '123', fullName: 'Kế Toán NVRC', company: 'NVRC', role: 'ACCOUNTANT' }
     ];
 
     const DEFAULT_TASK_TYPES = [
@@ -1276,7 +1260,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
           ...u,
           id: u.id || ('u_' + (u.username || Math.random().toString(36).slice(2))),
           fullName: u.fullName || u.name || (fallback ? fallback.fullName : u.username || 'Người dùng'),
-          password: u.password || u.pin || '1234',
+          password: u.password || u.pin || '123',
           company: u.company || 'NAVI',
           role: u.role || 'ACCOUNTANT'
         };
@@ -1444,12 +1428,6 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       return appState.activeScope || 'BOTH';
     }
 
-    function canSeeCompanyInternal(company) {
-      const scope = getEffectiveScope();
-      if (scope === 'BOTH') return true;
-      return scope === company;
-    }
-
     function handleLogin(e) {
       e.preventDefault();
       const uname = document.getElementById('loginUsername').value.trim().toLowerCase();
@@ -1544,23 +1522,43 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
     function getScopedMonthlyRows() {
       const scope = getEffectiveScope();
       const rows = [];
-      Object.values(appState.monthlyCosts).forEach((m) => {
-        if (scope !== 'BOTH' && m.company !== scope) return;
-        const kwh = Math.max(0, (Number(m.elecEnd) || 0) - (Number(m.elecStart) || 0));
-        const elecBase = kwh * (Number(m.elecRate) || 0);
-        const elecTotal = elecBase * (1 + (Number(m.elecVat) || 0) / 100);
-        const fixedTotal = (Number(m.cleaning) || 0) + (Number(m.rent) || 0);
+      Object.entries(appState.monthlyCosts || {}).forEach(([rawKey, m]) => {
+        if (!m || typeof m !== 'object') return;
+        const comp = m.company || (rawKey.startsWith('NVRC_') ? 'NVRC' : 'NAVI');
+        const mon = m.month || rawKey.replace(/^(NAVI|NVRC)_/, '');
+        if (scope !== 'BOTH' && comp !== scope) return;
+
+        const elecStart = Number(m.elecStart ?? m.dienDau) || 0;
+        const elecEnd = Number(m.elecEnd ?? m.dienCuoi) || 0;
+        const elecRate = Number(m.elecRate ?? m.donGiaDien) || 0;
+        const elecVat = Number(m.elecVat ?? m.vatDien) || 0;
+        const cleaning = Number(m.cleaning ?? m.veSinh) || 0;
+        const rent = Number(m.rent ?? m.thueVp) || 0;
+
+        const kwh = Math.max(0, elecEnd - elecStart);
+        const elecBase = kwh * elecRate;
+        const elecTotal = elecBase * (1 + elecVat / 100);
+        const fixedTotal = cleaning + rent;
 
         const ncTotal = appState.ncEntries
-          .filter((n) => n.company === m.company && n.month === m.month)
+          .filter((n) => n.company === comp && n.month === mon)
           .reduce((s, n) => s + ((Number(n.amount) || 0) - (Number(n.mealDeduct) || 0)), 0);
 
         const xeTotal = appState.xeEntries
-          .filter((x) => x.month === m.month && (m.company === 'NAVI' ? x.direction === 'NVRC_TO_NAVI' : x.direction === 'NAVI_TO_NVRC'))
+          .filter((x) => x.month === mon && (comp === 'NAVI' ? x.direction === 'NVRC_TO_NAVI' : x.direction === 'NAVI_TO_NVRC'))
           .reduce((s, x) => s + calcXeRowTotal(x), 0);
 
         rows.push({
           ...m,
+          _key: rawKey,
+          company: comp,
+          month: mon,
+          elecStart,
+          elecEnd,
+          elecRate,
+          elecVat,
+          cleaning,
+          rent,
           kwh,
           elecTotal,
           fixedTotal,
@@ -1587,7 +1585,6 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
         .filter((n) => n.status !== 'Đã thanh toán')
         .reduce((s, n) => s + ((Number(n.amount) || 0) - (Number(n.mealDeduct) || 0)), 0);
 
-      // Hỗ trợ 2 bên luôn hiển thị đầy đủ cả 2 chiều để đối soát
       const totalXe = appState.xeEntries.reduce((s, x) => s + calcXeRowTotal(x), 0);
       const pendingXe = appState.xeEntries
         .filter((x) => x.status !== 'Đã đối soát duyệt')
@@ -1674,7 +1671,9 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
         return;
       }
 
-      tbody.innerHTML = filtered.map((r) => `
+      tbody.innerHTML = filtered.map((r) => {
+        const safeKey = String(r._key).replace(/'/g, "\\'");
+        return `
         <tr class="hover:bg-slate-50/80">
           <td class="py-3 px-3 font-extrabold text-slate-900">${r.month}</td>
           <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-md text-[11px] font-extrabold ${r.company === 'NAVI' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}">${r.company}</span></td>
@@ -1684,20 +1683,27 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
           <td class="py-3 px-3 text-right font-bold text-indigo-700">${formatCurrency(r.ncTotal)}</td>
           <td class="py-3 px-3 text-right font-bold text-emerald-700">${formatCurrency(r.xeTotal)}</td>
           <td class="py-3 px-3 text-right font-extrabold text-slate-900">${formatCurrency(r.grandTotal)}</td>
-          <td class="py-3 px-3 text-center">
-            <button onclick="openMonthModal('${r.company}_${r.month}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">Sửa</button>
+          <td class="py-3 px-3 text-center whitespace-nowrap">
+            <button onclick="openMonthModal('${safeKey}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold mr-1">Sửa</button>
+            <button onclick="deleteMonthCost('${safeKey}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold">Xóa</button>
           </td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
 
-      mobileBox.innerHTML = filtered.map((r) => `
+      mobileBox.innerHTML = filtered.map((r) => {
+        const safeKey = String(r._key).replace(/'/g, "\\'");
+        return `
         <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-2 text-xs">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="font-extrabold text-sm text-slate-900">Tháng ${r.month}</span>
               <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold ${r.company === 'NAVI' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">${r.company}</span>
             </div>
-            <button onclick="openMonthModal('${r.company}_${r.month}')" class="px-3 py-1 rounded-lg bg-white border border-slate-300 font-bold">Sửa</button>
+            <div class="flex items-center gap-1.5">
+              <button onclick="openMonthModal('${safeKey}')" class="px-3 py-1 rounded-lg bg-white border border-slate-300 font-bold">Sửa</button>
+              <button onclick="deleteMonthCost('${safeKey}')" class="px-3 py-1 rounded-lg bg-rose-50 text-rose-700 font-bold">Xóa</button>
+            </div>
           </div>
           <div class="grid grid-cols-2 gap-1.5 text-[11px] text-slate-600">
             <div>Điện (${formatVnNumber(r.kwh, 1)} kWh): <b class="text-slate-900">${formatCurrency(r.elecTotal)}</b></div>
@@ -1710,7 +1716,8 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
             <span class="font-extrabold text-sm text-blue-700">${formatCurrency(r.grandTotal)}</span>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
 
       renderMonthlyChart(filtered);
     }
@@ -1787,7 +1794,6 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       const scope = getEffectiveScope();
       const scopedList = getScopedNcEntries();
 
-      // 1. Cập nhật tiêu đề & danh sách chi tiết nhanh ngay tại Tab 1 (Gom theo công trình)
       const subTitle = document.getElementById('tab1NcSubTitle');
       const subDesc = document.getElementById('tab1NcSubDesc');
       if (subTitle) {
@@ -1879,7 +1885,6 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
         }
       }
 
-      // 2. Nạp bộ lọc Tháng & Loại công việc ở Tab 2
       const mSel = document.getElementById('filterNcMonth');
       const tSel = document.getElementById('filterNcTask');
       if (!mSel || !tSel) return;
@@ -2099,7 +2104,6 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
 
       const list = curM === 'ALL' ? appState.xeEntries : appState.xeEntries.filter((x) => x.month === curM);
 
-      // Sub list ở Tab 1 (Gom cùng công trình / nội dung hỗ trợ)
       const subBox = document.getElementById('xeSubListContainer');
       const subXeGroups = groupXeEntriesByProject(appState.xeEntries);
       subBox.innerHTML = subXeGroups.slice(0, 10).map((g) => {
@@ -2363,6 +2367,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       }
       box.innerHTML = visible.slice().reverse().map((v) => {
         const isDone = v.status === 'APPROVED';
+        const safeVId = String(v.id).replace(/'/g, "\\'");
         return `
           <div class="p-4 rounded-2xl border border-slate-200 bg-white shadow-xs flex flex-col justify-between gap-3">
             <div>
@@ -2388,11 +2393,15 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
                 </div>` : ''}
               </div>
             </div>
-            <div class="pt-3 border-t border-slate-100 flex flex-wrap gap-2 justify-end text-xs">
-              <button onclick="openVoucherModal('${v.id}')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold flex items-center gap-1"><i data-lucide="pencil" class="w-3.5 h-3.5"></i><span>Sửa</span></button>
-              <button onclick="deleteVoucher('${v.id}')" class="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold flex items-center gap-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Xóa</span></button>
-              ${!isDone ? `<button onclick="signVoucher('${v.id}')" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center gap-1"><i data-lucide="pen-tool" class="w-3.5 h-3.5"></i><span>Ký duyệt điện tử</span></button>` : ''}
-              <button onclick="printVoucher('${v.id}')" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold flex items-center gap-1"><i data-lucide="printer" class="w-3.5 h-3.5"></i><span>In A4</span></button>
+            <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <button onclick="openVoucherModal('${safeVId}')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Sửa</button>
+                <button onclick="deleteVoucher('${safeVId}')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold">Xóa</button>
+              </div>
+              <div class="flex items-center gap-1.5">
+                ${!isDone ? `<button onclick="signVoucher('${safeVId}')" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1"><i data-lucide="pen-tool" class="w-3.5 h-3.5"></i><span>Ký duyệt điện tử</span></button>` : ''}
+                <button onclick="printVoucher('${safeVId}')" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1"><i data-lucide="printer" class="w-3.5 h-3.5"></i><span>In A4</span></button>
+              </div>
             </div>
           </div>
         `;
@@ -2400,43 +2409,48 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
     }
 
     function renderSystemTab() {
-      document.getElementById('cfgSupaUrl').value = cloudConfig.url || '';
-      document.getElementById('cfgSupaKey').value = cloudConfig.anonKey || '';
-      document.getElementById('cfgSupaTable').value = cloudConfig.tableName || 'nv_nvrc_app_state';
-      document.getElementById('cfgSupaRecord').value = cloudConfig.recordId || 'nv_nvrc_main_v1';
+      const urlEl = document.getElementById('cfgSupaUrl');
+      if (urlEl) {
+        urlEl.value = cloudConfig.url || '';
+        document.getElementById('cfgSupaKey').value = cloudConfig.anonKey || '';
+        document.getElementById('cfgSupaTable').value = cloudConfig.tableName || 'nv_nvrc_app_state';
+        document.getElementById('cfgSupaRecord').value = cloudConfig.recordId || 'nv_nvrc_main_v1';
+      }
 
       const curUser = getCurrentUser();
-      const isAdmin = curUser && curUser.role === 'ADMIN';
-      const box = document.getElementById('usersListContainer');
-      box.innerHTML = appState.users.map((u) => {
-        const displayName = u.fullName || u.name || u.username;
-        const roleLabel = u.role === 'ADMIN' ? 'Admin Tổng' : (u.role === 'MANAGER' ? 'Trưởng ĐV' : 'Kế toán');
-        const isSelf = curUser && curUser.id === u.id;
-        return `
-        <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-2 text-xs">
-          <div class="min-w-0">
-            <div class="font-extrabold text-slate-900 truncate">${displayName}</div>
-            <div class="text-[11px] text-slate-500 mt-0.5">User: <b>${u.username}</b> • ĐV: <b>${u.company}</b> • ${roleLabel}</div>
-          </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            ${isAdmin ? `<button onclick="openUserModal('${u.id}')" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 font-bold">Sửa</button>` : ''}
-            ${isAdmin && !isSelf && appState.users.length > 1
-              ? `<button onclick="deleteUser('${u.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold">Xóa</button>`
-              : ''}
-          </div>
-        </div>
-      `;
-      }).join('');
+      const usersBox = document.getElementById('usersListContainer');
+      if (usersBox) {
+        usersBox.innerHTML = appState.users.map((u) => {
+          const safeUId = String(u.id).replace(/'/g, "\\'");
+          const roleText = u.role === 'ADMIN' ? 'Admin Tổng' : (u.role === 'MANAGER' ? 'Trưởng ĐV' : 'Kế toán');
+          const canDelete = curUser && curUser.role === 'ADMIN' && u.id !== curUser.id && u.username !== 'admin2ben';
+          const canEdit = curUser && curUser.role === 'ADMIN';
+          return `
+            <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-2 text-xs">
+              <div class="min-w-0">
+                <div class="font-extrabold text-slate-900 truncate">${u.fullName || u.name || u.username}</div>
+                <div class="text-[11px] text-slate-500 mt-0.5">User: <b>${u.username}</b> • ĐV: <b>${u.company}</b> • ${roleText}</div>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                ${canEdit ? `<button onclick="openUserModal('${safeUId}')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100">Sửa</button>` : ''}
+                ${canDelete ? `<button onclick="deleteUser('${safeUId}')" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 font-bold hover:bg-rose-100">Xóa</button>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
 
       const logBox = document.getElementById('auditLogContainer');
-      logBox.innerHTML = appState.auditLogs.length
-        ? appState.auditLogs.map((l) => `
-            <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between gap-2 text-xs">
-              <div><b class="text-slate-900">${l.user}:</b> <span class="text-slate-700">${l.action}</span></div>
-              <span class="text-[11px] text-slate-400 shrink-0">${l.time}</span>
-            </div>
-          `).join('')
-        : '<div class="p-4 text-center text-xs text-slate-400">Chưa có nhật ký thao tác</div>';
+      if (logBox) {
+        logBox.innerHTML = appState.auditLogs.length
+          ? appState.auditLogs.map((l) => `
+              <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between gap-2 text-xs">
+                <div><b class="text-slate-900">${l.user}:</b> <span class="text-slate-700">${l.action}</span></div>
+                <span class="text-[11px] text-slate-400 shrink-0">${l.time}</span>
+              </div>
+            `).join('')
+          : '<div class="p-4 text-center text-xs text-slate-400">Chưa có nhật ký thao tác</div>';
+      }
     }
 
     function renderAll() {
@@ -2456,6 +2470,9 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
     function openMonthModal(key = null) {
       const user = getCurrentUser();
       const compEl = document.getElementById('mCompany');
+      const titleEl = document.getElementById('monthModalTitle');
+      const editKeyEl = document.getElementById('mEditKey');
+
       if (user && user.company !== 'BOTH') {
         compEl.value = user.company;
         compEl.disabled = true;
@@ -2463,17 +2480,23 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
         compEl.disabled = false;
       }
 
-      if (key && appState.monthlyCosts[key]) {
-        const m = appState.monthlyCosts[key];
-        compEl.value = m.company;
-        document.getElementById('mMonth').value = m.month;
-        document.getElementById('mElecStart').value = formatVnNumber(m.elecStart, 2);
-        document.getElementById('mElecEnd').value = formatVnNumber(m.elecEnd, 2);
-        document.getElementById('mElecRate').value = formatVnNumber(m.elecRate, 2);
-        document.getElementById('mElecVat').value = formatVnNumber(m.elecVat, 2);
-        document.getElementById('mCleaning').value = formatVnNumber(m.cleaning, 0);
-        document.getElementById('mRent').value = formatVnNumber(m.rent, 0);
+      const existing = key && appState.monthlyCosts ? appState.monthlyCosts[key] : null;
+      if (existing) {
+        const comp = existing.company || (key.startsWith('NVRC_') ? 'NVRC' : 'NAVI');
+        const mon = existing.month || key.replace(/^(NAVI|NVRC)_/, '');
+        if (titleEl) titleEl.textContent = `Sửa Chi Phí Tháng ${mon} (${comp})`;
+        if (editKeyEl) editKeyEl.value = key;
+        compEl.value = comp;
+        document.getElementById('mMonth').value = mon;
+        document.getElementById('mElecStart').value = formatVnNumber(existing.elecStart ?? existing.dienDau ?? 0, 2);
+        document.getElementById('mElecEnd').value = formatVnNumber(existing.elecEnd ?? existing.dienCuoi ?? 0, 2);
+        document.getElementById('mElecRate').value = formatVnNumber(existing.elecRate ?? existing.donGiaDien ?? 3500, 2);
+        document.getElementById('mElecVat').value = formatVnNumber(existing.elecVat ?? existing.vatDien ?? 8, 2);
+        document.getElementById('mCleaning').value = formatVnNumber(existing.cleaning ?? existing.veSinh ?? 0, 0);
+        document.getElementById('mRent').value = formatVnNumber(existing.rent ?? existing.thueVp ?? 0, 0);
       } else {
+        if (titleEl) titleEl.textContent = 'Thêm Chi Phí Vận Hành Tháng';
+        if (editKeyEl) editKeyEl.value = '';
         const now = new Date();
         const mm = String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
         document.getElementById('mMonth').value = mm;
@@ -2490,10 +2513,17 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
 
     function saveMonthCosts(e) {
       e.preventDefault();
+      const oldKey = document.getElementById('mEditKey')?.value || '';
       const company = document.getElementById('mCompany').value;
       const month = document.getElementById('mMonth').value.trim();
-      const key = `${company}_${month}`;
-      appState.monthlyCosts[key] = {
+      const newKey = `${company}_${month}`;
+      if (!appState.monthlyCosts || typeof appState.monthlyCosts !== 'object') {
+        appState.monthlyCosts = {};
+      }
+      if (oldKey && oldKey !== newKey && appState.monthlyCosts[oldKey]) {
+        delete appState.monthlyCosts[oldKey];
+      }
+      appState.monthlyCosts[newKey] = {
         company,
         month,
         elecStart: parseVnNumber(document.getElementById('mElecStart').value),
@@ -2504,8 +2534,17 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
         rent: parseVnNumber(document.getElementById('mRent').value)
       };
       closeModal('monthModal');
-      saveStateAndSync(`Cập nhật chi phí tháng ${month} (${company})`);
-      showToast('Đã lưu chi phí tháng!');
+      saveStateAndSync(`${oldKey ? 'Sửa' : 'Thêm'} chi phí tháng ${month} (${company})`);
+      showToast(`Đã lưu chi phí tháng ${month}!`);
+    }
+
+    function deleteMonthCost(key) {
+      if (!appState.monthlyCosts || !appState.monthlyCosts[key]) return;
+      const item = appState.monthlyCosts[key];
+      const label = `${item.month || key} (${item.company || ''})`;
+      delete appState.monthlyCosts[key];
+      saveStateAndSync(`Xóa chi phí tháng ${label}`);
+      showToast(`Đã xóa chi phí tháng ${label}!`);
     }
 
     function populateNcTaskDropdown(selectedTask = '') {
@@ -2650,9 +2689,9 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       if (idx >= 0 && appState.taskTypes[idx]) {
         const oldName = appState.taskTypes[idx].name;
         appState.taskTypes[idx] = { name, defaultRate: rate };
-        if (oldName !== name) {
-          appState.ncEntries.forEach((n) => { if (n.task === oldName) n.task = name; });
-        }
+        appState.ncEntries.forEach((n) => {
+          if (n.task === oldName) n.task = name;
+        });
       } else {
         appState.taskTypes.push({ name, defaultRate: rate });
       }
@@ -2661,9 +2700,11 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       document.getElementById('ttRate').value = '';
       document.getElementById('ttSubmitBtn').textContent = 'Thêm';
       renderTaskTypesList();
-      populateNcTaskDropdown(name);
+      if (!document.getElementById('ncModal').classList.contains('hidden')) {
+        populateNcTaskDropdown(name);
+        onSelectNcTaskType();
+      }
       saveStateAndSync(`Cập nhật danh mục loại công việc: ${name}`);
-      showToast('Đã lưu loại công việc!');
     }
 
     function deleteTaskType(idx) {
@@ -2673,57 +2714,24 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       }
       const removed = appState.taskTypes.splice(idx, 1)[0];
       renderTaskTypesList();
-      populateNcTaskDropdown();
       saveStateAndSync(`Xóa loại công việc: ${removed.name}`);
     }
 
     // Hỗ trợ Xe & NC 2 bên
-    function openXeModal(editId = null) {
-      const astSel = document.getElementById('xeAssetId');
-      astSel.innerHTML = appState.assets.map((a) => `<option value="${a.id}">[${a.owner}] ${a.name}${a.plate ? ' - ' + a.plate : ''} (${formatCurrency(a.rate)}/${a.unit})</option>`).join('');
-
-      if (editId) {
-        const x = appState.xeEntries.find((item) => item.id === editId);
-        if (!x) return;
-        document.getElementById('xeModalTitle').textContent = 'Sửa Phiếu Hỗ Trợ 2 Bên';
-        document.getElementById('xeEditId').value = x.id;
-        const [d, m, y] = x.date.split('/');
-        document.getElementById('xeDate').value = `${y}-${m}-${d}`;
-        document.getElementById('xeDirection').value = x.direction;
-        astSel.value = x.assetId;
-        document.getElementById('xeDesc').value = x.desc;
-        document.getElementById('xeOdoStart').value = formatVnNumber(x.odoStart || 0, 1);
-        document.getElementById('xeOdoEnd').value = formatVnNumber(x.odoEnd || 0, 1);
-        document.getElementById('xeQty').value = formatVnNumber(x.qty || 1, 2);
-        document.getElementById('xeRate').value = formatVnNumber(x.rate || 0, 0);
-        document.getElementById('xeBaseFee').value = formatVnNumber(x.baseFee || 0, 0);
-        document.getElementById('xeAllowance').value = formatVnNumber(x.allowance || 0, 0);
-        document.getElementById('xeAdvance').value = formatVnNumber(x.advance || 0, 0);
-        document.getElementById('xeToll').value = formatVnNumber(x.toll || 0, 0);
-        document.getElementById('xeStatus').value = x.status;
-      } else {
-        document.getElementById('xeModalTitle').textContent = 'Thêm Phiếu Hỗ Trợ Xe & NC 2 Bên';
-        document.getElementById('xeEditId').value = '';
-        document.getElementById('xeDate').value = new Date().toISOString().slice(0, 10);
-        document.getElementById('xeDesc').value = '';
-        document.getElementById('xeOdoStart').value = '0';
-        document.getElementById('xeOdoEnd').value = '0';
-        document.getElementById('xeQty').value = '1';
-        onSelectXeAsset();
-        document.getElementById('xeAllowance').value = '0';
-        document.getElementById('xeAdvance').value = '0';
-        document.getElementById('xeToll').value = '0';
-        document.getElementById('xeStatus').value = 'Chờ đối soát';
-      }
-      document.getElementById('xeModal').classList.remove('hidden');
-      safeIcons();
+    function populateXeAssetsDropdown(selectedId = '') {
+      const sel = document.getElementById('xeAssetId');
+      sel.innerHTML =
+        '<option value="">-- Hỗ trợ khác (nhập tay) --</option>' +
+        appState.assets
+          .map((a) => `<option value="${a.id}" ${a.id === selectedId ? 'selected' : ''}>[${a.owner}] ${a.name}${a.plate ? ' (' + a.plate + ')' : ''} - ${formatCurrency(a.rate)}/${a.unit}</option>`)
+          .join('');
     }
 
     function onSelectXeAsset() {
       const id = document.getElementById('xeAssetId').value;
-      const a = appState.assets.find((item) => item.id === id);
-      if (a) {
-        document.getElementById('xeRate').value = formatVnNumber(a.rate, 0);
+      const asset = appState.assets.find((a) => a.id === id);
+      if (asset) {
+        document.getElementById('xeRate').value = formatVnNumber(asset.rate, 0);
         calcXeBaseFee();
       }
     }
@@ -2734,7 +2742,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       const s = parseVnNumber(document.getElementById('xeOdoStart').value);
       const e = parseVnNumber(document.getElementById('xeOdoEnd').value);
       if (e > s) {
-        document.getElementById('xeQty').value = formatVnNumber(e - s, 1);
+        document.getElementById('xeQty').value = formatVnNumber(e - s, 2);
         calcXeBaseFee();
       }
     }
@@ -2745,6 +2753,48 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       const qty = parseVnNumber(document.getElementById('xeQty').value);
       const rate = parseVnNumber(document.getElementById('xeRate').value);
       document.getElementById('xeBaseFee').value = formatVnNumber(Math.round(qty * rate), 0);
+    }
+
+    function openXeModal(editId = null) {
+      if (editId) {
+        const item = appState.xeEntries.find((x) => x.id === editId);
+        if (!item) return;
+        document.getElementById('xeModalTitle').textContent = 'Sửa Phiếu Hỗ Trợ Xe & NC 2 Bên';
+        document.getElementById('xeEditId').value = item.id;
+        const [d, m, y] = item.date.split('/');
+        document.getElementById('xeDate').value = `${y}-${m}-${d}`;
+        document.getElementById('xeDirection').value = item.direction;
+        populateXeAssetsDropdown(item.assetId);
+        document.getElementById('xeDesc').value = item.desc;
+        document.getElementById('xeOdoStart').value = formatVnNumber(item.odoStart || 0, 2);
+        document.getElementById('xeOdoEnd').value = formatVnNumber(item.odoEnd || 0, 2);
+        document.getElementById('xeQty').value = formatVnNumber(item.qty || 1, 2);
+        document.getElementById('xeRate').value = formatVnNumber(item.rate || 0, 0);
+        document.getElementById('xeBaseFee').value = formatVnNumber(item.baseFee || 0, 0);
+        document.getElementById('xeAllowance').value = formatVnNumber(item.allowance || 0, 0);
+        document.getElementById('xeAdvance').value = formatVnNumber(item.advance || 0, 0);
+        document.getElementById('xeToll').value = formatVnNumber(item.toll || 0, 0);
+        document.getElementById('xeStatus').value = item.status;
+      } else {
+        document.getElementById('xeModalTitle').textContent = 'Thêm Phiếu Hỗ Trợ Xe & NC 2 Bên';
+        document.getElementById('xeEditId').value = '';
+        document.getElementById('xeDate').value = new Date().toISOString().slice(0, 10);
+        const user = getCurrentUser();
+        document.getElementById('xeDirection').value = user && user.company === 'NVRC' ? 'NVRC_TO_NAVI' : 'NAVI_TO_NVRC';
+        populateXeAssetsDropdown();
+        document.getElementById('xeDesc').value = '';
+        document.getElementById('xeOdoStart').value = '0';
+        document.getElementById('xeOdoEnd').value = '0';
+        document.getElementById('xeQty').value = '1';
+        document.getElementById('xeRate').value = '0';
+        document.getElementById('xeBaseFee').value = '0';
+        document.getElementById('xeAllowance').value = '0';
+        document.getElementById('xeAdvance').value = '0';
+        document.getElementById('xeToll').value = '0';
+        document.getElementById('xeStatus').value = 'Chờ đối soát';
+      }
+      document.getElementById('xeModal').classList.remove('hidden');
+      safeIcons();
     }
 
     function saveXeEntry(e) {
@@ -2768,6 +2818,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
         toll: parseVnNumber(document.getElementById('xeToll').value),
         status: document.getElementById('xeStatus').value
       };
+
       if (editId) {
         const idx = appState.xeEntries.findIndex((x) => String(x.id) === String(editId));
         if (idx >= 0) appState.xeEntries[idx] = { ...appState.xeEntries[idx], ...payload };
@@ -2782,27 +2833,30 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
 
     function deleteXeEntry(id) {
       appState.xeEntries = appState.xeEntries.filter((x) => x.id !== id);
-      saveStateAndSync(`Xóa phiếu hỗ trợ 2 bên #${id}`);
+      saveStateAndSync(`Xóa phiếu hỗ trợ ID #${id}`);
       showToast('Đã xóa phiếu hỗ trợ!');
     }
 
-    // Danh mục Xe & Tài sản (Có biển số xe)
+    // Danh mục Xe & Tài sản
     function openAssetModal(editId = null) {
       if (editId) {
-        const a = appState.assets.find((item) => item.id === editId);
-        if (!a) return;
-        document.getElementById('assetModalTitle').textContent = 'Sửa Xe / Tài Sản';
-        document.getElementById('assetEditId').value = a.id;
-        document.getElementById('assetOwner').value = a.owner;
-        document.getElementById('assetType').value = a.type;
-        document.getElementById('assetName').value = a.name;
-        document.getElementById('assetPlate').value = a.plate || '';
-        document.getElementById('assetUnit').value = a.unit;
-        document.getElementById('assetRate').value = formatVnNumber(a.rate, 0);
-        document.getElementById('assetNote').value = a.note || '';
+        const item = appState.assets.find((a) => a.id === editId);
+        if (!item) return;
+        document.getElementById('assetModalTitle').textContent = 'Sửa Xe / Tài Sản Định Mức';
+        document.getElementById('assetEditId').value = item.id;
+        document.getElementById('assetOwner').value = item.owner;
+        document.getElementById('assetType').value = item.type;
+        document.getElementById('assetName').value = item.name;
+        document.getElementById('assetPlate').value = item.plate || '';
+        document.getElementById('assetUnit').value = item.unit;
+        document.getElementById('assetRate').value = formatVnNumber(item.rate, 0);
+        document.getElementById('assetNote').value = item.note || '';
       } else {
         document.getElementById('assetModalTitle').textContent = 'Thêm Xe / Tài Sản Định Mức';
         document.getElementById('assetEditId').value = '';
+        const user = getCurrentUser();
+        document.getElementById('assetOwner').value = user && user.company === 'NVRC' ? 'NVRC' : 'NAVI';
+        document.getElementById('assetType').value = 'Xe tải / Bán tải';
         document.getElementById('assetName').value = '';
         document.getElementById('assetPlate').value = '';
         document.getElementById('assetUnit').value = 'km';
@@ -2832,121 +2886,124 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
         appState.assets.push({ id: 'ast_' + Date.now(), ...payload });
       }
       closeModal('assetModal');
-      saveStateAndSync(`Cập nhật danh mục xe/tài sản: ${payload.name} ${payload.plate ? '(' + payload.plate + ')' : ''}`);
+      saveStateAndSync(`${editId ? 'Sửa' : 'Thêm'} tài sản: ${payload.name} ${payload.plate ? '(' + payload.plate + ')' : ''}`);
       showToast('Đã lưu danh mục tài sản!');
     }
 
     function deleteAssetItem(id) {
       appState.assets = appState.assets.filter((a) => a.id !== id);
-      saveStateAndSync(`Xóa tài sản ${id}`);
+      saveStateAndSync(`Xóa tài sản ID ${id}`);
       showToast('Đã xóa tài sản!');
     }
 
-    // Biên bản duyệt chi
+    // Biên bản duyệt chi (Tạo / Sửa / Xóa / Ký duyệt / In A4)
+    let editingVoucherPreselectedItems = [];
+
     function openVoucherModal(editId = null) {
       const user = getCurrentUser();
       const compEl = document.getElementById('vCompany');
-      const existing = editId ? appState.vouchers.find((item) => item.id === editId) : null;
+      if (user && user.company !== 'BOTH') {
+        compEl.value = user.company;
+        compEl.disabled = true;
+      } else {
+        compEl.disabled = false;
+      }
 
-      if (existing) {
-        document.getElementById('voucherModalTitle').textContent = `Sửa Biên Bản (${existing.id})`;
-        document.getElementById('vSubmitBtn').textContent = 'Lưu thay đổi';
-        document.getElementById('vEditId').value = existing.id;
-        document.getElementById('vType').value = existing.type;
-        compEl.value = existing.company;
-        compEl.disabled = user && user.company !== 'BOTH';
-        document.getElementById('vTitle').value = existing.title;
-        document.getElementById('vNote').value = existing.note || '';
-        document.getElementById('vMonth').value = existing.month || '';
-        populateVoucherItems(existing.items || []);
-        document.getElementById('vAmount').value = formatVnNumber(existing.amount, 0);
+      if (editId) {
+        const v = appState.vouchers.find((item) => item.id === editId);
+        if (!v) return;
+        document.getElementById('voucherModalTitle').textContent = `Sửa Biên Bản ${v.id}`;
+        document.getElementById('vSubmitBtn').textContent = 'Cập nhật biên bản';
+        document.getElementById('vEditId').value = v.id;
+        document.getElementById('vType').value = v.type;
+        compEl.value = v.company;
+        document.getElementById('vTitle').value = v.title;
+        document.getElementById('vMonth').value = v.month;
+        document.getElementById('vNote').value = v.note || '';
+        editingVoucherPreselectedItems = Array.isArray(v.items) ? v.items : [];
+        populateVoucherItems();
+        document.getElementById('vAmount').value = formatVnNumber(v.amount, 0);
       } else {
         document.getElementById('voucherModalTitle').textContent = 'Tạo Biên Bản Đề Nghị Duyệt Chi';
         document.getElementById('vSubmitBtn').textContent = 'Lập biên bản';
         document.getElementById('vEditId').value = '';
-        if (user && user.company !== 'BOTH') {
-          compEl.value = user.company;
-          compEl.disabled = true;
-        } else {
-          compEl.disabled = false;
-        }
+        document.getElementById('vType').value = 'INTERNAL';
         document.getElementById('vTitle').value = '';
+        document.getElementById('vMonth').value = '11/2026';
         document.getElementById('vNote').value = '';
+        editingVoucherPreselectedItems = [];
+        populateVoucherItems();
         document.getElementById('vAmount').value = '0';
-        populateVoucherItems([]);
       }
       document.getElementById('voucherModal').classList.remove('hidden');
       safeIcons();
     }
 
-    function populateVoucherItems(selectedItems = []) {
+    function populateVoucherItems() {
       const type = document.getElementById('vType').value;
-      const comp = document.getElementById('vCompany').value;
+      const company = document.getElementById('vCompany').value;
       const box = document.getElementById('vItemsChecklist');
-      const selectedKeys = new Set(selectedItems.map((it) => `${it.kind}_${it.id}`));
-
       let candidates = [];
+
       if (type === 'INTERNAL') {
-        candidates = appState.ncEntries
-          .filter((n) => n.company === comp && (n.status !== 'Đã thanh toán' || selectedKeys.has(`NC_${n.id}`)))
-          .map((n) => ({
-            kind: 'NC',
-            id: n.id,
-            label: `${n.date} • ${n.worker} (${n.project})`,
-            amount: (Number(n.amount) || 0) - (Number(n.mealDeduct) || 0)
-          }));
+        appState.ncEntries
+          .filter((n) => n.company === company && (n.status !== 'Đã thanh toán' || editingVoucherPreselectedItems.some((p) => p.kind === 'NC' && p.id === n.id)))
+          .forEach((n) => {
+            const net = (Number(n.amount) || 0) - (Number(n.mealDeduct) || 0);
+            candidates.push({ kind: 'NC', id: n.id, label: `${n.date} - ${n.project} (${n.worker})`, amount: net });
+          });
       } else {
-        candidates = appState.xeEntries
-          .filter((x) => x.status !== 'Đã đối soát duyệt' || selectedKeys.has(`XE_${x.id}`))
-          .map((x) => ({
-            kind: 'XE',
-            id: x.id,
-            label: `${x.date} • ${x.desc}`,
-            amount: calcXeRowTotal(x)
-          }));
+        appState.xeEntries
+          .filter((x) => x.status !== 'Đã đối soát duyệt' || editingVoucherPreselectedItems.some((p) => p.kind === 'XE' && p.id === x.id))
+          .forEach((x) => {
+            candidates.push({ kind: 'XE', id: x.id, label: `${x.date} - ${x.desc} (${getAssetDisplayLabel(x.assetId)})`, amount: calcXeRowTotal(x) });
+          });
       }
+
       if (!candidates.length) {
-        box.innerHTML = '<div class="text-slate-400 text-[11px] py-2 text-center">Không có khoản chờ thanh toán, bạn có thể nhập trực tiếp số tiền bên dưới</div>';
+        box.innerHTML = '<div class="text-center text-slate-400 py-3">Không có khoản chưa thanh toán nào (có thể nhập trực tiếp tổng tiền bên dưới)</div>';
         return;
       }
-      box.innerHTML = candidates.map((c) => {
-        const isChecked = selectedKeys.has(`${c.kind}_${c.id}`) ? 'checked' : '';
-        return `
-        <label class="flex items-center justify-between gap-2 p-1.5 rounded-lg hover:bg-white cursor-pointer">
-          <span class="flex items-center gap-2 min-w-0">
-            <input type="checkbox" ${isChecked} data-kind="${c.kind}" data-id="${c.id}" data-amt="${c.amount}" data-label="${c.label}" onchange="recalcVoucherAmount()" class="v-item-chk rounded" />
-            <span class="truncate">${c.label}</span>
-          </span>
-          <b class="shrink-0 text-slate-900">${formatCurrency(c.amount)}</b>
-        </label>
-      `;
-      }).join('');
+
+      box.innerHTML = candidates
+        .map((c, idx) => {
+          const checked = editingVoucherPreselectedItems.some((p) => p.kind === c.kind && p.id === c.id) ? 'checked' : '';
+          return `
+            <label class="flex items-center justify-between gap-2 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer hover:bg-blue-50/50">
+              <div class="flex items-center gap-2 min-w-0">
+                <input type="checkbox" ${checked} data-kind="${c.kind}" data-id="${c.id}" data-label="${c.label.replace(/"/g, '&quot;')}" data-amount="${c.amount}" onchange="recalcVoucherTotal()" class="v-item-chk rounded" />
+                <span class="truncate font-semibold text-slate-800">${c.label}</span>
+              </div>
+              <span class="font-extrabold text-blue-700 shrink-0">${formatCurrency(c.amount)}</span>
+            </label>
+          `;
+        })
+        .join('');
     }
 
-    function recalcVoucherAmount() {
+    function recalcVoucherTotal() {
       let sum = 0;
       document.querySelectorAll('.v-item-chk:checked').forEach((chk) => {
-        sum += Number(chk.dataset.amt) || 0;
+        sum += Number(chk.dataset.amount) || 0;
       });
       document.getElementById('vAmount').value = formatVnNumber(sum, 0);
     }
 
-    function revertVoucherLinkedItems(items) {
-      if (!Array.isArray(items)) return;
-      items.forEach((it) => {
+    function revertVoucherItemsStatus(v) {
+      if (!v || !Array.isArray(v.items)) return;
+      v.items.forEach((it) => {
         if (it.kind === 'NC') {
-          const nc = appState.ncEntries.find((n) => n.id === it.id);
-          if (nc) nc.status = 'Chưa thanh toán';
+          const n = appState.ncEntries.find((item) => item.id === it.id);
+          if (n) n.status = 'Chưa thanh toán';
         } else if (it.kind === 'XE') {
-          const xe = appState.xeEntries.find((x) => x.id === it.id);
-          if (xe) xe.status = 'Chờ đối soát';
+          const x = appState.xeEntries.find((item) => item.id === it.id);
+          if (x) x.status = 'Chờ đối soát';
         }
       });
     }
 
     function saveVoucherForm(e) {
       e.preventDefault();
-      const user = getCurrentUser();
       const editId = document.getElementById('vEditId').value;
       const items = [];
       document.querySelectorAll('.v-item-chk:checked').forEach((chk) => {
@@ -2954,179 +3011,168 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
           kind: chk.dataset.kind,
           id: Number(chk.dataset.id),
           label: chk.dataset.label,
-          amount: Number(chk.dataset.amt)
+          amount: Number(chk.dataset.amount) || 0
         });
       });
 
-      if (editId) {
-        const idx = appState.vouchers.findIndex((item) => item.id === editId);
-        if (idx >= 0) {
-          const oldVoucher = appState.vouchers[idx];
-          if (oldVoucher.status === 'APPROVED') {
-            revertVoucherLinkedItems(oldVoucher.items);
-          }
-          appState.vouchers[idx] = {
-            ...oldVoucher,
-            type: document.getElementById('vType').value,
-            company: document.getElementById('vCompany').value,
-            month: document.getElementById('vMonth').value.trim(),
-            title: document.getElementById('vTitle').value.trim(),
-            items,
-            amount: parseVnNumber(document.getElementById('vAmount').value),
-            note: document.getElementById('vNote').value.trim(),
-            status: 'PENDING',
-            signA: null,
-            signB: null
-          };
-          closeModal('voucherModal');
-          saveStateAndSync(`Cập nhật biên bản duyệt chi ${editId}`);
-          showToast(`Đã cập nhật biên bản ${editId}!`);
-          return;
-        }
-      }
-
-      const vId = 'BB-' + new Date().getFullYear() + '-' + String(appState.vouchers.length + 1).padStart(3, '0');
-      appState.vouchers.push({
-        id: vId,
+      const user = getCurrentUser();
+      const payload = {
         type: document.getElementById('vType').value,
         company: document.getElementById('vCompany').value,
         month: document.getElementById('vMonth').value.trim(),
         title: document.getElementById('vTitle').value.trim(),
         items,
         amount: parseVnNumber(document.getElementById('vAmount').value),
-        note: document.getElementById('vNote').value.trim(),
-        status: 'PENDING',
-        createdBy: user ? user.fullName : 'Kế toán',
-        createdAt: new Date().toLocaleString('vi-VN'),
-        signA: null,
-        signB: null
-      });
-      closeModal('voucherModal');
-      saveStateAndSync(`Tạo biên bản duyệt chi ${vId}`);
-      showToast('Đã lập biên bản duyệt chi!');
-    }
+        note: document.getElementById('vNote').value.trim()
+      };
 
-    function deleteVoucher(vId) {
-      const idx = appState.vouchers.findIndex((item) => item.id === vId);
-      if (idx < 0) return;
-      const target = appState.vouchers[idx];
-      if (target.status === 'APPROVED') {
-        revertVoucherLinkedItems(target.items);
+      if (editId) {
+        const idx = appState.vouchers.findIndex((v) => v.id === editId);
+        if (idx >= 0) {
+          revertVoucherItemsStatus(appState.vouchers[idx]);
+          appState.vouchers[idx] = {
+            ...appState.vouchers[idx],
+            ...payload,
+            status: 'PENDING',
+            signA: null,
+            signB: null
+          };
+        }
+        closeModal('voucherModal');
+        saveStateAndSync(`Cập nhật biên bản ${editId}: ${payload.title}`);
+        showToast(`Đã cập nhật biên bản ${editId}!`);
+      } else {
+        const newId = `BB-${new Date().getFullYear()}-${String(appState.vouchers.length + 1).padStart(3, '0')}`;
+        appState.vouchers.push({
+          id: newId,
+          ...payload,
+          status: 'PENDING',
+          createdBy: user ? user.fullName : 'Kế toán',
+          createdAt: new Date().toLocaleString('vi-VN'),
+          signA: null,
+          signB: null
+        });
+        closeModal('voucherModal');
+        saveStateAndSync(`Tạo biên bản duyệt chi ${newId}: ${payload.title}`);
+        showToast(`Đã lập biên bản ${newId}!`);
       }
-      appState.vouchers.splice(idx, 1);
-      saveStateAndSync(`Xóa biên bản duyệt chi ${vId}`);
-      showToast(`Đã xóa biên bản ${vId}!`);
     }
 
-    function signVoucher(vId) {
-      const v = appState.vouchers.find((item) => item.id === vId);
+    function deleteVoucher(id) {
+      const idx = appState.vouchers.findIndex((v) => v.id === id);
+      if (idx < 0) return;
+      const v = appState.vouchers[idx];
+      revertVoucherItemsStatus(v);
+      appState.vouchers.splice(idx, 1);
+      saveStateAndSync(`Xóa biên bản ${id} (${v.title})`);
+      showToast(`Đã xóa biên bản ${id}!`);
+    }
+
+    function signVoucher(id) {
+      const v = appState.vouchers.find((item) => item.id === id);
       const user = getCurrentUser();
       if (!v || !user) return;
       const stamp = `${user.fullName} (${new Date().toLocaleString('vi-VN')})`;
+
       if (v.type === 'INTERNAL') {
         v.signA = stamp;
         v.status = 'APPROVED';
       } else {
-        if (!v.signA) v.signA = stamp;
-        else v.signB = stamp;
-        if (v.signA && v.signB) v.status = 'APPROVED';
+        if (!v.signA) {
+          v.signA = stamp;
+        } else if (!v.signB) {
+          v.signB = stamp;
+          v.status = 'APPROVED';
+        }
       }
 
       if (v.status === 'APPROVED' && Array.isArray(v.items)) {
         v.items.forEach((it) => {
           if (it.kind === 'NC') {
-            const nc = appState.ncEntries.find((n) => n.id === it.id);
-            if (nc) nc.status = 'Đã thanh toán';
+            const n = appState.ncEntries.find((item) => item.id === it.id);
+            if (n) n.status = 'Đã thanh toán';
           } else if (it.kind === 'XE') {
-            const xe = appState.xeEntries.find((x) => x.id === it.id);
-            if (xe) xe.status = 'Đã đối soát duyệt';
+            const x = appState.xeEntries.find((item) => item.id === it.id);
+            if (x) x.status = 'Đã đối soát duyệt';
           }
         });
       }
-      saveStateAndSync(`Ký duyệt biên bản ${v.id}`);
-      showToast('Đã ký duyệt biên bản!');
+
+      saveStateAndSync(`Ký duyệt điện tử biên bản ${v.id}`);
+      showToast(v.status === 'APPROVED' ? `Biên bản ${v.id} đã duyệt & tự động gạch nợ!` : `Đã ghi nhận chữ ký Bên A trên ${v.id}`);
     }
 
-    function printVoucher(vId) {
-      const v = appState.vouchers.find((item) => item.id === vId);
+    function printVoucher(id) {
+      const v = appState.vouchers.find((item) => item.id === id);
       if (!v) return;
-      const printArea = document.getElementById('printArea');
-      printArea.innerHTML = `
+      const printEl = document.getElementById('printArea');
+      printEl.classList.remove('hidden');
+      printEl.innerHTML = `
         <div style="font-family: 'Times New Roman', serif; color: #000; line-height: 1.5;">
-          <div style="display:flex; justify-content:space-between; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom: 16px;">
             <div>
-              <h2 style="margin:0; font-size:18px; font-weight:bold;">CÔNG TY ${v.company}</h2>
-              <p style="margin:2px 0 0; font-size:13px;">Hệ thống quản lý chi phí nội bộ NAVI ↔ NVRC</p>
+              <div style="font-weight:bold; font-size:14px;">ĐƠN VỊ: ${v.company}</div>
+              <div style="font-size:12px;">Số chứng từ: ${v.id}</div>
             </div>
-            <div style="text-align:right; font-size:13px;">
-              <div><b>Số phiếu:</b> ${v.id}</div>
-              <div><b>Kỳ tháng:</b> ${v.month}</div>
+            <div style="text-align:center;">
+              <div style="font-weight:bold; font-size:13px;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+              <div style="font-weight:bold; font-size:12px; text-decoration:underline;">Độc lập - Tự do - Hạnh phúc</div>
             </div>
           </div>
-          <h1 style="text-align:center; font-size:22px; margin:20px 0 6px;">BIÊN BẢN ĐỀ NGHỊ & PHÊ DUYỆT CHI</h1>
-          <p style="text-align:center; font-style:italic; margin:0 0 20px;">Ngày lập: ${v.createdAt}</p>
-          <p><b>Nội dung:</b> ${v.title}</p>
-          <p><b>Tổng số tiền đề nghị duyệt chi:</b> <span style="font-size:18px; font-weight:bold;">${formatCurrency(v.amount)}</span></p>
-          <p><b>Ghi chú thanh toán:</b> ${v.note || 'Không có'}</p>
-          ${v.items && v.items.length ? `
-            <table style="width:100%; border-collapse:collapse; margin-top:15px; font-size:13px;">
-              <thead>
-                <tr>
-                  <th style="border:1px solid #000; padding:6px;">STT</th>
-                  <th style="border:1px solid #000; padding:6px; text-align:left;">Diễn giải khoản chi</th>
-                  <th style="border:1px solid #000; padding:6px; text-align:right;">Số tiền</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${v.items.map((it, i) => `
-                  <tr>
-                    <td style="border:1px solid #000; padding:6px; text-align:center;">${i + 1}</td>
-                    <td style="border:1px solid #000; padding:6px;">${it.label}</td>
-                    <td style="border:1px solid #000; padding:6px; text-align:right;">${formatCurrency(it.amount)}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          ` : ''}
-          <div style="display:flex; justify-content:space-around; margin-top:45px; text-align:center;">
-            <div>
+          <h2 style="text-align:center; font-size:18px; font-weight:bold; margin: 18px 0 6px;">BIÊN BẢN ĐỀ NGHỊ & PHÊ DUYỆT CHI</h2>
+          <p style="text-align:center; font-style:italic; font-size:13px; margin-bottom:16px;">Kỳ thanh toán: ${v.month} • Ngày lập: ${v.createdAt}</p>
+          <p style="font-size:14px;"><b>Nội dung đề nghị:</b> ${v.title}</p>
+          <p style="font-size:14px;"><b>Tổng số tiền đề nghị chi:</b> <span style="font-size:16px; font-weight:bold;">${formatCurrency(v.amount)}</span></p>
+          ${v.note ? `<p style="font-size:13px;"><b>Ghi chú:</b> ${v.note}</p>` : ''}
+          <table style="width:100%; border-collapse:collapse; margin-top:14px; font-size:13px;">
+            <thead>
+              <tr style="background:#f1f5f9;">
+                <th style="border:1px solid #333; padding:6px; text-align:center; width:45px;">STT</th>
+                <th style="border:1px solid #333; padding:6px; text-align:left;">Chi tiết khoản mục</th>
+                <th style="border:1px solid #333; padding:6px; text-align:right; width:140px;">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${(v.items && v.items.length ? v.items : [{ label: v.title, amount: v.amount }])
+                .map((it, i) => `<tr><td style="border:1px solid #333; padding:6px; text-align:center;">${i + 1}</td><td style="border:1px solid #333; padding:6px;">${it.label}</td><td style="border:1px solid #333; padding:6px; text-align:right;">${formatCurrency(it.amount)}</td></tr>`)
+                .join('')}
+            </tbody>
+          </table>
+          <div style="display:flex; justify-content:space-between; margin-top:32px; text-align:center; font-size:13px;">
+            <div style="width:32%;">
               <b>NGƯỜI LẬP BIỂU</b><br/><br/><br/>
-              <span>${v.createdBy}</span>
+              <i>${v.createdBy}</i>
             </div>
-            <div>
-              <b>PHÊ DUYỆT BÊN A (${v.company})</b><br/><br/><br/>
-              <span>${v.signA || '(Chưa ký)'}</span>
+            <div style="width:32%;">
+              <b>TRƯỞNG ĐƠN VỊ (${v.company})</b><br/><br/><br/>
+              <i>${v.signA || '(Chưa ký)'}</i>
             </div>
-            ${v.type === 'INTERCOMPANY' ? `
-            <div>
-              <b>XÁC NHẬN BÊN B (${v.company === 'NAVI' ? 'NVRC' : 'NAVI'})</b><br/><br/><br/>
-              <span>${v.signB || '(Chưa ký)'}</span>
-            </div>` : ''}
+            ${v.type === 'INTERCOMPANY' ? `<div style="width:32%;"><b>ĐẠI DIỆN BÊN B (${v.company === 'NAVI' ? 'NVRC' : 'NAVI'})</b><br/><br/><br/><i>${v.signB || '(Chưa ký)'}</i></div>` : ''}
           </div>
         </div>
       `;
-      printArea.classList.remove('hidden');
-      window.print();
-      printArea.classList.add('hidden');
+      setTimeout(() => {
+        window.print();
+        printEl.classList.add('hidden');
+      }, 200);
     }
 
-    // =========================================================================
-    // 8. QUẢN LÝ TÀI KHOẢN, CẤU HÌNH CLOUD & XUẤT EXCEL
-    // =========================================================================
+    // Quản lý tài khoản (Thêm / Sửa / Xóa)
     function openUserModal(editId = null) {
-      const existing = editId ? appState.users.find((u) => u.id === editId) : null;
-      if (existing) {
-        document.getElementById('userModalTitle').textContent = `Sửa Tài Khoản (${existing.username})`;
-        document.getElementById('uSubmitBtn').textContent = 'Lưu thay đổi';
-        document.getElementById('uEditId').value = existing.id;
-        document.getElementById('uFullName').value = existing.fullName || existing.name || existing.username;
-        document.getElementById('uUsername').value = existing.username;
-        document.getElementById('uPassword').value = existing.password || '123';
-        document.getElementById('uCompany').value = existing.company || 'NAVI';
-        document.getElementById('uRole').value = existing.role || 'ACCOUNTANT';
+      if (editId) {
+        const u = appState.users.find((item) => item.id === editId);
+        if (!u) return;
+        document.getElementById('userModalTitle').textContent = `Sửa Tài Khoản: ${u.username}`;
+        document.getElementById('uSubmitBtn').textContent = 'Cập nhật tài khoản';
+        document.getElementById('uEditId').value = u.id;
+        document.getElementById('uFullName').value = u.fullName || u.name || '';
+        document.getElementById('uUsername').value = u.username;
+        document.getElementById('uPassword').value = u.password || '123';
+        document.getElementById('uCompany').value = u.company || 'NAVI';
+        document.getElementById('uRole').value = u.role || 'ACCOUNTANT';
       } else {
         document.getElementById('userModalTitle').textContent = 'Thêm Tài Khoản Người Dùng';
-        document.getElementById('uSubmitBtn').textContent = 'Tạo tài khoản';
+        document.getElementById('uSubmitBtn').textContent = 'Lưu tài khoản';
         document.getElementById('uEditId').value = '';
         document.getElementById('uFullName').value = '';
         document.getElementById('uUsername').value = '';
@@ -3141,42 +3187,33 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
     function saveUserForm(e) {
       e.preventDefault();
       const editId = document.getElementById('uEditId').value;
-      const username = document.getElementById('uUsername').value.trim().toLowerCase();
-      const fullName = document.getElementById('uFullName').value.trim();
-      const password = document.getElementById('uPassword').value.trim();
-      const company = document.getElementById('uCompany').value;
-      const role = document.getElementById('uRole').value;
-
-      if (editId) {
-        if (appState.users.some((u) => u.id !== editId && u.username.toLowerCase() === username)) {
-          showToast('Tên đăng nhập đã được sử dụng bởi tài khoản khác!');
-          return;
-        }
-        const idx = appState.users.findIndex((u) => u.id === editId);
-        if (idx >= 0) {
-          appState.users[idx] = { ...appState.users[idx], fullName, username, password, company, role };
-        }
-        closeModal('userModal');
-        saveStateAndSync(`Cập nhật tài khoản: ${username} (${fullName})`);
-        showToast('Đã cập nhật thông tin tài khoản!');
-        return;
-      }
-
-      if (appState.users.some((u) => u.username.toLowerCase() === username)) {
+      const username = document.getElementById('uUsername').value.trim();
+      if (appState.users.some((u) => u.username.toLowerCase() === username.toLowerCase() && u.id !== editId)) {
         showToast('Tên đăng nhập đã tồn tại!');
         return;
       }
-      appState.users.push({
-        id: 'u_' + Date.now(),
-        fullName,
+      const payload = {
+        fullName: document.getElementById('uFullName').value.trim(),
         username,
-        password,
-        company,
-        role
-      });
-      closeModal('userModal');
-      saveStateAndSync(`Thêm tài khoản mới: ${username}`);
-      showToast('Đã tạo tài khoản!');
+        password: document.getElementById('uPassword').value.trim(),
+        company: document.getElementById('uCompany').value,
+        role: document.getElementById('uRole').value
+      };
+
+      if (editId) {
+        const idx = appState.users.findIndex((u) => u.id === editId);
+        if (idx >= 0) {
+          appState.users[idx] = { ...appState.users[idx], ...payload };
+        }
+        closeModal('userModal');
+        saveStateAndSync(`Cập nhật tài khoản: ${username} (${payload.company})`);
+        showToast(`Đã cập nhật tài khoản ${username}!`);
+      } else {
+        appState.users.push({ id: 'u_' + Date.now(), ...payload });
+        closeModal('userModal');
+        saveStateAndSync(`Tạo tài khoản mới: ${username} (${payload.company})`);
+        showToast('Đã tạo tài khoản mới!');
+      }
     }
 
     function deleteUser(id) {
@@ -3187,20 +3224,88 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       showToast(`Đã xóa tài khoản ${target.username}!`);
     }
 
+    // =========================================================================
+    // 8. CẤU HÌNH CLOUD, SAO LƯU & XUẤT EXCEL
+    // =========================================================================
+    function toggleCfgSupaKey() {
+      const inp = document.getElementById('cfgSupaKey');
+      if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function copySupabaseSql() {
+      const sql = document.getElementById('supaSqlCode')?.textContent || '';
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(sql);
+        showToast('Đã sao chép mã SQL Supabase!');
+      }
+    }
+
+    function exportBackupJson() {
+      const dataStr = JSON.stringify({ ...appState, currentUserId: null }, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `THEODOI_HOTRO_BACKUP_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      showToast('Đã tải file sao lưu dữ liệu (.json)!');
+    }
+
+    function importBackupJson(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed || typeof parsed !== 'object') throw new Error('File không hợp lệ');
+          appState = {
+            ...appState,
+            ...parsed,
+            currentUserId: appState.currentUserId,
+            activeScope: appState.activeScope,
+            users: normalizeUsersList(parsed.users),
+            ncEntries: migrateNcOwner(parsed.ncEntries),
+            vouchers: migrateDefaultVoucher(parsed.vouchers)
+          };
+          saveStateAndSync('Khôi phục dữ liệu từ file sao lưu JSON');
+          showToast('Khôi phục dữ liệu thành công!');
+        } catch (err) {
+          showToast('Lỗi đọc file sao lưu JSON!');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
     function openQuickCloudModal() {
-      document.getElementById('qSupaUrl').value = cloudConfig.url || '';
-      document.getElementById('qSupaKey').value = cloudConfig.anonKey || '';
+      document.getElementById('qSupaUrl').value = cloudConfig.url;
+      document.getElementById('qSupaKey').value = cloudConfig.anonKey;
+      document.getElementById('qCloudFeedback').classList.add('hidden');
       document.getElementById('quickCloudModal').classList.remove('hidden');
-      safeIcons();
     }
 
     async function saveQuickCloud() {
       cloudConfig.url = document.getElementById('qSupaUrl').value.trim();
       cloudConfig.anonKey = document.getElementById('qSupaKey').value.trim();
       localStorage.setItem(CLOUD_CFG_KEY, JSON.stringify(cloudConfig));
-      await pullStateFromSupabase(true);
-      closeModal('quickCloudModal');
-      showToast('Đã cập nhật cấu hình Supabase!');
+      const fb = document.getElementById('qCloudFeedback');
+      fb.classList.remove('hidden', 'bg-rose-50', 'text-rose-700', 'bg-emerald-50', 'text-emerald-700');
+      try {
+        const res = await fetch(`${cloudConfig.url.replace(/\/$/, '')}/rest/v1/${cloudConfig.tableName}?limit=1`, { headers: getSupaHeaders() });
+        if (!res.ok) {
+          const txt = await res.text();
+          fb.classList.add('bg-rose-50', 'text-rose-700');
+          fb.textContent = `Lỗi kết nối (${res.status}): ${txt.slice(0, 140)}`;
+        } else {
+          fb.classList.add('bg-emerald-50', 'text-emerald-700');
+          fb.textContent = 'Kết nối Supabase thành công! Đang đồng bộ dữ liệu...';
+          await pullStateFromSupabase(true);
+          setTimeout(() => closeModal('quickCloudModal'), 900);
+        }
+      } catch (err) {
+        fb.classList.add('bg-rose-50', 'text-rose-700');
+        fb.textContent = 'Không thể kết nối máy chủ Supabase: ' + err.message;
+      }
     }
 
     async function saveCloudConfigFromTab() {
@@ -3210,102 +3315,36 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       cloudConfig.recordId = document.getElementById('cfgSupaRecord').value.trim() || 'nv_nvrc_main_v1';
       localStorage.setItem(CLOUD_CFG_KEY, JSON.stringify(cloudConfig));
       await pushStateToSupabase();
-      showToast('Đã lưu cấu hình & đồng bộ lên Cloud!');
+      showToast('Đã lưu cấu hình & đồng bộ Supabase!');
     }
 
     function downloadConfiguredHtml() {
-      const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const newCfgBlock = `const DEFAULT_SUPABASE_CONFIG = {\n      url: '${cloudConfig.url}',\n      anonKey: '${cloudConfig.anonKey}',\n      tableName: '${cloudConfig.tableName}',\n      recordId: '${cloudConfig.recordId}'\n    };`;
+      html = html.replace(/const DEFAULT_SUPABASE_CONFIG = \{[\s\S]*?\};/, newCfgBlock);
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'index.html';
       a.click();
-      showToast('Đã tải file index.html gắn sẵn cấu hình!');
-    }
-
-    function toggleCfgSupaKey() {
-      const inp = document.getElementById('cfgSupaKey');
-      if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
-    }
-
-    function copySupabaseSql() {
-      const sqlEl = document.getElementById('supaSqlCode');
-      if (!sqlEl) return;
-      const ta = document.createElement('textarea');
-      ta.value = sqlEl.textContent;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      showToast('Đã sao chép mã SQL khởi tạo bảng Supabase!');
-    }
-
-    function exportBackupJson() {
-      const backupPayload = {
-        exportedAt: new Date().toISOString(),
-        app: 'THEODOI_HOTRO_NAVI_NVRC',
-        data: { ...appState, currentUserId: null }
-      };
-      const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: 'application/json;charset=utf-8' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `Backup_NAVI_NVRC_${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      showToast('Đã tải file sao lưu dữ liệu (.json)!');
-    }
-
-    function importBackupJson(e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (evt) {
-        try {
-          const parsed = JSON.parse(evt.target.result);
-          const incoming = parsed && parsed.data ? parsed.data : parsed;
-          if (!incoming || (!incoming.ncEntries && !incoming.monthlyCosts)) {
-            showToast('File sao lưu không đúng định dạng!');
-            return;
-          }
-          appState = {
-            ...appState,
-            ...incoming,
-            currentUserId: appState.currentUserId,
-            activeScope: appState.activeScope,
-            activeTab: appState.activeTab,
-            users: normalizeUsersList(incoming.users),
-            ncEntries: migrateNcOwner(incoming.ncEntries),
-            vouchers: migrateDefaultVoucher(incoming.vouchers)
-          };
-          saveStateAndSync(`Khôi phục dữ liệu từ file sao lưu (${file.name})`);
-          showToast('Đã khôi phục dữ liệu & đồng bộ lên Cloud thành công!');
-        } catch (err) {
-          showToast('Lỗi đọc file JSON: ' + err.message);
-        } finally {
-          e.target.value = '';
-        }
-      };
-      reader.readAsText(file);
+      showToast('Đã tải file index.html gắn sẵn khóa Supabase!');
     }
 
     function exportFullExcel() {
-      if (typeof XLSX === 'undefined') {
-        showToast('Thư viện Excel đang tải, vui lòng thử lại!');
-        return;
-      }
       const wb = XLSX.utils.book_new();
-      const summaryData = getScopedMonthlyRows().map((r) => ({
+      const mRows = getScopedMonthlyRows().map((r) => ({
         'Tháng': r.month,
         'Đơn vị': r.company,
-        'Điện (kWh)': r.kwh,
+        'Điện tiêu thụ (kWh)': r.kwh,
         'Tiền điện (+VAT)': Math.round(r.elecTotal),
         'Vệ sinh + Thuê VP': Math.round(r.fixedTotal),
         'NC thuê ngoài': Math.round(r.ncTotal),
         'Hỗ trợ 2 bên': Math.round(r.xeTotal),
         'Tổng cộng': Math.round(r.grandTotal)
       }));
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), 'TongHopThang');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(mRows), 'TongHopThang');
 
-      const ncData = getScopedNcEntries().map((n) => ({
+      const ncRows = getScopedNcEntries().map((n) => ({
         'Ngày': n.date,
         'Đơn vị': n.company,
         'Công trình': n.project,
@@ -3316,25 +3355,25 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
         'Thực lãnh': (Number(n.amount) || 0) - (Number(n.mealDeduct) || 0),
         'Trạng thái': n.status
       }));
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ncData), 'NCThueNgoai');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ncRows), 'NCThueNgoai');
 
-      const xeData = appState.xeEntries.map((x) => ({
+      const xeRows = appState.xeEntries.map((x) => ({
         'Ngày': x.date,
-        'Chiều hỗ trợ': x.direction === 'NAVI_TO_NVRC' ? 'NAVI -> NVRC' : 'NVRC -> NAVI',
-        'Xe / Tài sản': getAssetDisplayLabel(x.assetId),
+        'Chiều hỗ trợ': x.direction === 'NAVI_TO_NVRC' ? 'NAVI hỗ trợ NVRC' : 'NVRC hỗ trợ NAVI',
+        'Xe / Tài sản (Biển số)': getAssetDisplayLabel(x.assetId),
         'Nội dung': x.desc,
         'Số lượng': x.qty,
         'Tổng tiền': calcXeRowTotal(x),
         'Trạng thái': x.status
       }));
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(xeData), 'HoTro2Ben');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(xeRows), 'HoTro2Ben');
 
       XLSX.writeFile(wb, `THEODOI_HOTRO_NAVI_NVRC_${new Date().toISOString().slice(0, 10)}.xlsx`);
-      showToast('Đã xuất file Excel thành công!');
+      showToast('Đã xuất báo cáo Excel thành công!');
     }
 
     // =========================================================================
-    // 9. TIỆN ÍCH CHUNG & KHỞI TẠO
+    // 9. TIỆN ÍCH & KHỞI TẠO
     // =========================================================================
     function closeModal(id) {
       const el = document.getElementById(id);
@@ -3343,10 +3382,11 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
 
     function showToast(msg) {
       const box = document.getElementById('toastBox');
+      if (!box) return;
       box.textContent = msg;
       box.classList.remove('hidden');
-      clearTimeout(box._timer);
-      box._timer = setTimeout(() => box.classList.add('hidden'), 3000);
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => box.classList.add('hidden'), 3200);
     }
 
     function safeIcons() {
@@ -3357,23 +3397,22 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
       } catch (e) {}
     }
 
-    window.onload = async function () {
+    window.addEventListener('DOMContentLoaded', () => {
       loadCloudConfig();
       loadLocalState();
       safeIcons();
 
-      const savedSession = sessionStorage.getItem(SESSION_KEY);
-      if (savedSession && appState.users.some((u) => u.id === savedSession)) {
-        appState.currentUserId = savedSession;
+      const savedUserId = sessionStorage.getItem(SESSION_KEY);
+      if (savedUserId && appState.users.some((u) => u.id === savedUserId)) {
+        appState.currentUserId = savedUserId;
         const u = getCurrentUser();
         appState.activeScope = u.company === 'BOTH' ? 'BOTH' : u.company;
         enterApp();
       }
 
-      await pullStateFromSupabase(true);
-      if (syncIntervalId) clearInterval(syncIntervalId);
+      pullStateFromSupabase(false);
       syncIntervalId = setInterval(() => pullStateFromSupabase(false), 5000);
-    };
+    });
   </script>
 </body>
 </html>
