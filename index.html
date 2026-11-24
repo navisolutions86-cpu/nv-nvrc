@@ -1083,7 +1083,7 @@
           })
         : [...DEFAULT_USERS];
 
-      // Bảo đảm luôn có tài khoản admin / 1234
+      // Bảo đảm luôn có tài khoản admin / 1234 và admin2ben
       DEFAULT_USERS.forEach((def) => {
         if (!loadedUsers.some((u) => u.username === def.username)) {
           loadedUsers.push({ ...def });
