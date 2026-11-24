@@ -461,12 +461,14 @@
           <div class="flex flex-wrap items-center gap-2.5 mt-5">
             <button onclick="saveCloudConfigFromTab()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs transition">Lưu & Đồng bộ ngay</button>
             <button onclick="downloadConfiguredHtml()" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition">Tải index.html gắn sẵn Key</button>
+            <button onclick="copySupabaseSql()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold text-xs border border-slate-700 transition">Copy SQL tạo bảng</button>
             <button onclick="exportBackupJson()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition">Xuất sao lưu JSON</button>
             <label class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition cursor-pointer">
               Khôi phục từ JSON
               <input type="file" accept=".json" onchange="importBackupJson(event)" class="hidden" />
             </label>
           </div>
+          <p id="sysSyncFeedback" class="mt-3 text-xs text-slate-400"></p>
         </div>
 
         <!-- Quản lý tài khoản & Phân quyền đơn vị -->
@@ -474,7 +476,7 @@
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
             <div>
               <h2 class="text-base sm:text-lg font-extrabold text-slate-900">Danh Sách Tài Khoản & Phân Quyền Đơn Vị</h2>
-              <p class="text-xs text-slate-500 mt-0.5">Tài khoản NAVI hoặc NVRC chỉ xem được chi phí & NC nội bộ của bên đó + hỗ trợ qua lại 2 bên</p>
+              <p class="text-xs text-slate-500 mt-0.5">Tài khoản NAVI hoặc NVRC chỉ xem được chi phí & NC nội bộ của đơn vị đó + hỗ trợ qua lại 2 bên</p>
             </div>
             <button onclick="openUserModal()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition self-start sm:self-auto">+ Thêm tài khoản</button>
           </div>
@@ -515,6 +517,26 @@
   </div>
 
   <!-- ==================== CÁC HỘP THOẠI (MODALS) ==================== -->
+
+  <!-- 0. Modal Xác Nhận Xóa Tùy Chỉnh (Thay thế window.confirm để chạy ổn định trên mọi trình duyệt & iframe) -->
+  <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-5 sm:p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </div>
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Xác nhận xóa dữ liệu</h3>
+          <p class="text-[11px] text-slate-400">Thao tác này sẽ đồng bộ ngay lên hệ thống</p>
+        </div>
+      </div>
+      <p id="confirmDeleteMsg" class="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-2xl border border-slate-200/70">Bạn có chắc chắn muốn xóa mục này?</p>
+      <div class="flex justify-end gap-2 pt-1">
+        <button type="button" onclick="closeModal('confirmDeleteModal')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">Hủy bỏ</button>
+        <button type="button" id="confirmDeleteYesBtn" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm">Xác nhận xóa</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 1. Modal Thêm / Sửa Chi Phí Tháng -->
   <div id="monthModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end md:items-center justify-center p-0 md:p-4">
@@ -687,29 +709,29 @@
         <div class="grid grid-cols-3 gap-2.5">
           <div>
             <label class="block font-bold text-slate-700 mb-1">ODO Đầu</label>
-            <input id="xeOdoStart" type="text" inputmode="decimal" oninput="formatVnInput(this); calcXePreview()" value="0" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
+            <input id="xeOdoStart" type="text" inputmode="decimal" oninput="formatVnInput(this); calcXePreview()" value="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
           </div>
           <div>
             <label class="block font-bold text-slate-700 mb-1">ODO Cuối</label>
-            <input id="xeOdoEnd" type="text" inputmode="decimal" oninput="formatVnInput(this); calcXePreview()" value="0" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
+            <input id="xeOdoEnd" type="text" inputmode="decimal" oninput="formatVnInput(this); calcXePreview()" value="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
           </div>
           <div>
             <label class="block font-bold text-slate-700 mb-1">SL (Km/Chuyến)</label>
-            <input id="xeQty" type="text" inputmode="decimal" oninput="formatVnInput(this); calcXePreview()" value="1" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
+            <input id="xeQty" type="text" inputmode="decimal" oninput="formatVnInput(this); calcXePreview()" value="1" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
           </div>
         </div>
         <div class="grid grid-cols-3 gap-2.5">
           <div>
             <label class="block font-bold text-slate-700 mb-1">Đơn giá (đ)</label>
-            <input id="xeRate" type="text" inputmode="decimal" oninput="formatVnInput(this)" value="0" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
+            <input id="xeRate" type="text" inputmode="decimal" oninput="formatVnInput(this)" value="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
           </div>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Phụ cấp (đ)</label>
-            <input id="xeAllowance" type="text" inputmode="decimal" oninput="formatVnInput(this)" value="0" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
+            <input id="xeAllowance" type="text" inputmode="decimal" oninput="formatVnInput(this)" value="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
           </div>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Cầu đường / Ứng (đ)</label>
-            <input id="xeToll" type="text" inputmode="decimal" oninput="formatVnInput(this)" value="0" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
+            <input id="xeToll" type="text" inputmode="decimal" oninput="formatVnInput(this)" value="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold outline-none" />
           </div>
         </div>
         <div>
@@ -862,7 +884,7 @@
             <label class="block font-bold text-slate-700 mb-1">Vai trò quyền hạn</label>
             <select id="uRole" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold bg-white outline-none">
               <option value="STAFF">Kế toán (Nhập liệu)</option>
-              <option value="MANAGER">Trưởng ĐV (Ký duyệt)</option>
+              <option value="MANAGER">Trưởng Đơn Vị (Ký duyệt)</option>
               <option value="ADMIN">Admin Tổng</option>
             </select>
           </div>
@@ -928,11 +950,10 @@
 
     const DEFAULT_USERS = [
       { username: 'admin', pass: '1234', name: 'Admin Tổng (2 Bên)', company: 'BOTH', role: 'ADMIN' },
-      { username: 'admin2ben', pass: '1234', name: 'Quản Trị Hệ Thống 2 Bên', company: 'BOTH', role: 'ADMIN' },
-      { username: 'navi_tp', pass: '1234', name: 'Trưởng Đơn Vị NAVI', company: 'NAVI', role: 'MANAGER' },
-      { username: 'kt_navi', pass: '1234', name: 'Kế Toán NAVI', company: 'NAVI', role: 'STAFF' },
-      { username: 'nvrc_tp', pass: '1234', name: 'Trưởng Đơn Vị NVRC', company: 'NVRC', role: 'MANAGER' },
-      { username: 'kt_nvrc', pass: '1234', name: 'Kế Toán NVRC', company: 'NVRC', role: 'STAFF' }
+      { username: 'navi_tp', pass: '123', name: 'Trưởng Đơn Vị NAVI', company: 'NAVI', role: 'MANAGER' },
+      { username: 'kt_navi', pass: '123', name: 'Kế Toán NAVI', company: 'NAVI', role: 'STAFF' },
+      { username: 'nvrc_tp', pass: '123', name: 'Trưởng Đơn Vị NVRC', company: 'NVRC', role: 'MANAGER' },
+      { username: 'kt_nvrc', pass: '123', name: 'Kế Toán NVRC', company: 'NVRC', role: 'STAFF' }
     ];
 
     const DEFAULT_TASK_TYPES = [
@@ -943,7 +964,7 @@
     ];
 
     const DEFAULT_ASSETS = [
-      { id: 'A1', name: 'Xe tải Kia K250', plate: '60C-589.12', owner: 'NVRC', unit: 'km', rate: 12000 },
+      { id: 'A1', name: 'Xe tải Kia K250', plate: '60C-589.12', owner: 'NAVI', unit: 'km', rate: 12000 },
       { id: 'A2', name: 'Xe bán tải Ford Ranger', plate: '60C-412.88', owner: 'NVRC', unit: 'km', rate: 10000 },
       { id: 'A3', name: 'Nhân sự kỹ thuật hỗ trợ', plate: 'Nhân sự', owner: 'NAVI', unit: 'công', rate: 550000 }
     ];
@@ -993,13 +1014,35 @@
       xeEntries: DEFAULT_XE_ENTRIES,
       vouchers: DEFAULT_VOUCHERS,
       auditLogs: [],
-      updatedAt: Date.now()
+      updatedAt: 0
     };
 
     let currentUser = null;
     let isPushingToCloud = false;
     let expandedNcGroups = {};
     let expandedXeGroups = {};
+    let pendingDeleteCallback = null;
+
+    // ==================== HỘP THOẠI XÁC NHẬN XÓA TÙY CHỈNH ====================
+    function askConfirmDelete(message, onConfirm) {
+      pendingDeleteCallback = onConfirm;
+      document.getElementById('confirmDeleteMsg').textContent = message;
+      document.getElementById('confirmDeleteModal').classList.remove('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const yesBtn = document.getElementById('confirmDeleteYesBtn');
+      if (yesBtn) {
+        yesBtn.onclick = async () => {
+          closeModal('confirmDeleteModal');
+          if (typeof pendingDeleteCallback === 'function') {
+            const fn = pendingDeleteCallback;
+            pendingDeleteCallback = null;
+            await fn();
+          }
+        };
+      }
+    });
 
     // ==================== ĐỊNH DẠNG SỐ CHUẨN VIỆT NAM (. HÀNG NGHÌN, , THẬP PHÂN) ====================
     function parseVnNumber(val) {
@@ -1054,6 +1097,11 @@
       return '11/2026';
     }
 
+    function normalizeDisplayTitle(name, fallback) {
+      const raw = (name && name !== 'undefined') ? String(name) : (fallback || '');
+      return raw.replace(/Bộ Phận/g, 'Đơn Vị').replace(/bộ phận/g, 'đơn vị');
+    }
+
     // ==================== LƯU TRỮ & ĐỒNG BỘ SUPABASE CLOUD (5 GIÂY) ====================
     function getCloudConfig() {
       try {
@@ -1067,22 +1115,23 @@
       localStorage.setItem(CLOUD_CFG_KEY, JSON.stringify(cfg));
     }
 
-    function normalizeState(parsed) {
+    function normalizeState(parsed, preserveLocalDeletes = true) {
       if (!parsed || typeof parsed !== 'object') return;
       const loadedUsers = Array.isArray(parsed.users) && parsed.users.length
-        ? parsed.users.map((u) => {
-            const def = DEFAULT_USERS.find((d) => d.username === u.username);
-            return {
-              username: u.username || 'user',
-              pass: u.pass || '123',
-              name: (u.name && u.name !== 'undefined') ? u.name : (def ? def.name : u.username),
-              company: u.company || (def ? def.company : 'NAVI'),
-              role: u.role || (def ? def.role : 'STAFF')
-            };
-          })
+        ? parsed.users
+            .filter((u) => u && String(u.username || '').toLowerCase() !== 'admin2ben')
+            .map((u) => {
+              const def = DEFAULT_USERS.find((d) => d.username === u.username);
+              return {
+                username: u.username || 'user',
+                pass: u.pass || '123',
+                name: normalizeDisplayTitle(u.name, def ? def.name : u.username),
+                company: u.company || (def ? def.company : 'NAVI'),
+                role: u.role || (def ? def.role : 'STAFF')
+              };
+            })
         : [...DEFAULT_USERS];
 
-      // Bảo đảm luôn có tài khoản admin / 1234 và admin2ben
       DEFAULT_USERS.forEach((def) => {
         if (!loadedUsers.some((u) => u.username === def.username)) {
           loadedUsers.push({ ...def });
@@ -1097,16 +1146,22 @@
         ? parsed.vouchers.map((v) => (v.id === 'BB-2026-001' && v.company === 'NVRC' ? { ...v, company: 'NAVI', createdBy: 'Kế Toán NAVI' } : v))
         : [...DEFAULT_VOUCHERS];
 
-      const deletedSet = new Set(Array.isArray(parsed.deletedMonths) ? parsed.deletedMonths : []);
+      const mergedDeleted = new Set([
+        ...(preserveLocalDeletes && Array.isArray(appState.deletedMonths) ? appState.deletedMonths : []),
+        ...(Array.isArray(parsed.deletedMonths) ? parsed.deletedMonths : [])
+      ]);
+
       const cleanedMonthly = {};
-      const rawMonthly = parsed.monthlyCosts && typeof parsed.monthlyCosts === 'object' ? parsed.monthlyCosts : DEFAULT_MONTHLY_COSTS;
+      const hasMonthlyProp = parsed.monthlyCosts && typeof parsed.monthlyCosts === 'object';
+      const rawMonthly = hasMonthlyProp ? parsed.monthlyCosts : DEFAULT_MONTHLY_COSTS;
+
       Object.keys(rawMonthly).forEach((k) => {
         const item = rawMonthly[k];
         if (!item) return;
         const comp = item.company || (k.startsWith('NVRC_') ? 'NVRC' : 'NAVI');
         const m = item.month || k.replace(/^(NAVI_|NVRC_)/, '');
         const normKey = `${comp}_${m}`;
-        if (!deletedSet.has(normKey) && !deletedSet.has(k) && !deletedSet.has(m)) {
+        if (!mergedDeleted.has(normKey) && !mergedDeleted.has(k) && !mergedDeleted.has(m)) {
           cleanedMonthly[normKey] = { ...item, company: comp, month: m };
         }
       });
@@ -1116,28 +1171,28 @@
         ...parsed,
         users: loadedUsers,
         taskTypes: Array.isArray(parsed.taskTypes) && parsed.taskTypes.length ? parsed.taskTypes : [...DEFAULT_TASK_TYPES],
-        assets: Array.isArray(parsed.assets) && parsed.assets.length ? parsed.assets : [...DEFAULT_ASSETS],
+        assets: Array.isArray(parsed.assets) ? parsed.assets : [...DEFAULT_ASSETS],
         monthlyCosts: cleanedMonthly,
-        deletedMonths: Array.from(deletedSet),
+        deletedMonths: Array.from(mergedDeleted),
         ncEntries: migratedNc,
         xeEntries: Array.isArray(parsed.xeEntries) ? parsed.xeEntries : [...DEFAULT_XE_ENTRIES],
         vouchers: migratedVouchers,
         auditLogs: Array.isArray(parsed.auditLogs) ? parsed.auditLogs : [],
-        updatedAt: parsed.updatedAt || Date.now()
+        updatedAt: Number(parsed.updatedAt || Date.now())
       };
     }
 
     function loadLocalState() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) normalizeState(JSON.parse(raw));
+        if (raw) normalizeState(JSON.parse(raw), false);
       } catch (e) {
         console.error('Lỗi đọc localStorage:', e);
       }
     }
 
     function addAuditLog(actionText) {
-      const actor = currentUser ? currentUser.name : 'Hệ thống';
+      const actor = currentUser ? normalizeDisplayTitle(currentUser.name, currentUser.username) : 'Hệ thống';
       appState.auditLogs.unshift({
         actor,
         action: actionText,
@@ -1174,7 +1229,10 @@
 
     async function pushStateToSupabase() {
       const cfg = getCloudConfig();
-      if (!cfg.url || !cfg.key || cfg.key.endsWith('.placeholder')) return;
+      if (!cfg.url || !cfg.key || cfg.key.endsWith('.placeholder')) {
+        updateCloudIndicator(false, 'Chưa nhập Anon Key');
+        return false;
+      }
       isPushingToCloud = true;
       try {
         const endpoint = `${cfg.url.replace(/\/$/, '')}/rest/v1/${cfg.table}?on_conflict=id`;
@@ -1189,25 +1247,31 @@
           body: JSON.stringify([{
             id: cfg.recordId,
             payload: appState,
-            updated_at: new Date(appState.updatedAt).toISOString()
+            updated_at: new Date(appState.updatedAt || Date.now()).toISOString()
           }])
         });
         if (res.ok) {
           updateCloudIndicator(true, 'Supabase Online (5s)');
+          return true;
         } else {
           updateCloudIndicator(false, `Lỗi Cloud (${res.status})`);
+          return false;
         }
       } catch (e) {
         updateCloudIndicator(false, 'Lưu cục bộ (Offline)');
+        return false;
       } finally {
-        setTimeout(() => { isPushingToCloud = false; }, 1200);
+        setTimeout(() => { isPushingToCloud = false; }, 1500);
       }
     }
 
     async function pullStateFromSupabase(force = false) {
-      if (isPushingToCloud && !force) return;
+      if (isPushingToCloud && !force) return false;
       const cfg = getCloudConfig();
-      if (!cfg.url || !cfg.key || cfg.key.endsWith('.placeholder')) return;
+      if (!cfg.url || !cfg.key || cfg.key.endsWith('.placeholder')) {
+        updateCloudIndicator(false, 'Chưa nhập Anon Key');
+        return false;
+      }
       try {
         const endpoint = `${cfg.url.replace(/\/$/, '')}/rest/v1/${cfg.table}?id=eq.${encodeURIComponent(cfg.recordId)}&select=payload,updated_at`;
         const res = await fetch(endpoint, {
@@ -1216,26 +1280,69 @@
             'Authorization': `Bearer ${cfg.key}`
           }
         });
-        if (!res.ok) return;
+        if (!res.ok) {
+          updateCloudIndicator(false, `Lỗi Cloud (${res.status})`);
+          return false;
+        }
         const rows = await res.json();
         updateCloudIndicator(true, 'Supabase Online (5s)');
         if (Array.isArray(rows) && rows.length && rows[0].payload) {
           const remotePayload = rows[0].payload;
           const remoteTs = Number(remotePayload.updatedAt || 0);
           const localTs = Number(appState.updatedAt || 0);
-          if (force || remoteTs > localTs + 1000) {
-            normalizeState(remotePayload);
+
+          if (localTs > remoteTs + 1000 && !force) {
+            await pushStateToSupabase();
+          } else if (force || remoteTs > localTs + 1000) {
+            normalizeState(remotePayload, true);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
             if (currentUser) renderAll();
           }
+        } else if (localStorage.getItem(STORAGE_KEY)) {
+          await pushStateToSupabase();
         }
-      } catch (e) {}
+        return true;
+      } catch (e) {
+        updateCloudIndicator(false, 'Lưu cục bộ (Offline)');
+        return false;
+      }
     }
 
     async function manualSyncNow() {
+      const cfg = getCloudConfig();
+      const fb = document.getElementById('sysSyncFeedback');
+      if (!cfg.url || !cfg.key || cfg.key.endsWith('.placeholder')) {
+        updateCloudIndicator(false, 'Chưa nhập Anon Key');
+        switchTab('tab6');
+        if (fb) {
+          fb.className = 'mt-3 text-xs font-bold text-amber-300';
+          fb.textContent = '⚠ Bạn chưa dán Anon Public Key (eyJ...) của Supabase. Hãy dán vào ô số 2 ở trên rồi bấm "Lưu & Đồng bộ ngay" (hoặc bấm "Tải index.html gắn sẵn Key" để dùng chung mọi máy).';
+        }
+        return;
+      }
       updateCloudIndicator(true, 'Đang đồng bộ...');
-      await pushStateToSupabase();
-      await pullStateFromSupabase(true);
+      const pushed = await pushStateToSupabase();
+      const pulled = await pullStateFromSupabase(false);
+      if (fb) {
+        if (pushed || pulled) {
+          fb.className = 'mt-3 text-xs font-bold text-emerald-300';
+          fb.textContent = `✓ Đã đồng bộ dữ liệu thành công với Supabase Cloud lúc ${getNowStr()}.`;
+        } else {
+          fb.className = 'mt-3 text-xs font-bold text-rose-300';
+          fb.textContent = '✕ Không thể đồng bộ với Supabase. Vui lòng kiểm tra lại URL, Anon Key hoặc chạy lệnh SQL tạo bảng.';
+        }
+      }
+    }
+
+    function copySupabaseSql() {
+      const table = (document.getElementById('sysSbTable')?.value || 'nv_nvrc_app_state').trim();
+      const sql = `CREATE TABLE IF NOT EXISTS public.${table} (\n  id text PRIMARY KEY,\n  payload jsonb NOT NULL,\n  updated_at timestamptz DEFAULT now()\n);\nALTER TABLE public.${table} ENABLE ROW LEVEL SECURITY;\nDROP POLICY IF EXISTS "Allow public all" ON public.${table};\nCREATE POLICY "Allow public all" ON public.${table} FOR ALL USING (true) WITH CHECK (true);`;
+      navigator.clipboard?.writeText(sql);
+      const fb = document.getElementById('sysSyncFeedback');
+      if (fb) {
+        fb.className = 'mt-3 text-xs font-bold text-emerald-300';
+        fb.textContent = '✓ Đã sao chép mã SQL tạo bảng vào bộ nhớ tạm! Hãy dán vào Supabase → SQL Editor và bấm Run.';
+      }
     }
 
     // ==================== XÁC THỰC & PHÂN QUYỀN ĐƠN VỊ ====================
@@ -1255,8 +1362,8 @@
         return;
       }
       errEl.classList.add('hidden');
-      currentUser = found;
-      localStorage.setItem(SESSION_KEY, JSON.stringify(found));
+      currentUser = { ...found, name: normalizeDisplayTitle(found.name, found.username) };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
       enterMainApp();
     }
 
@@ -1276,11 +1383,11 @@
       const subEl = document.getElementById('currentUserSubtitle');
       const roleLabel = currentUser.role === 'ADMIN' ? 'Admin Tổng' : (currentUser.role === 'MANAGER' ? 'Trưởng Đơn Vị' : 'Kế Toán');
       const compLabel = currentUser.company === 'BOTH' ? 'Cả 2 bên (NAVI & NVRC)' : `Đơn vị ${currentUser.company}`;
+      const displayName = normalizeDisplayTitle(currentUser.name, currentUser.username);
 
       scopeBadge.textContent = currentUser.company === 'BOTH' ? 'Cả 2 bên' : currentUser.company;
-      subEl.textContent = `${currentUser.name} • ${roleLabel} • ${compLabel}`;
+      subEl.textContent = `${displayName} • ${roleLabel} • ${compLabel}`;
 
-      // Ẩn Tab 6 nếu không phải Admin
       const tab6Btn = document.getElementById('btn-tab6');
       if (tab6Btn) {
         if (currentUser.role === 'ADMIN' || currentUser.company === 'BOTH') tab6Btn.classList.remove('hidden');
@@ -1328,7 +1435,6 @@
       const deletedSet = new Set(appState.deletedMonths || []);
       const map = {};
 
-      // Chỉ lấy các tháng tồn tại trong monthlyCosts và không nằm trong danh sách đã xóa
       Object.keys(appState.monthlyCosts || {}).forEach((rawKey) => {
         const item = appState.monthlyCosts[rawKey];
         if (!item) return;
@@ -1336,7 +1442,7 @@
         const month = item.month || rawKey.replace(/^(NAVI_|NVRC_)/, '');
         const key = `${comp}_${month}`;
 
-        if (deletedSet.has(key) || deletedSet.has(rawKey)) return;
+        if (deletedSet.has(key) || deletedSet.has(rawKey) || deletedSet.has(month)) return;
         if (scope !== 'BOTH' && comp !== scope) return;
 
         map[key] = {
@@ -1373,7 +1479,6 @@
       const visibleNc = filterByUserCompany(appState.ncEntries);
       const allXe = appState.xeEntries || [];
 
-      // Cập nhật nhãn KPI theo đơn vị đăng nhập
       document.getElementById('kpiTotalLabel').textContent = scope === 'BOTH' ? 'Tổng chi phí vận hành (Cả 2 bên)' : `Tổng chi phí vận hành (${scope})`;
       document.getElementById('kpiNcLabel').textContent = scope === 'BOTH' ? 'NC thuê ngoài nội bộ (Cả 2 bên)' : `NC thuê ngoài nội bộ (${scope})`;
 
@@ -1426,7 +1531,6 @@
         netDescEl.textContent = 'Hai bên cân bằng công nợ';
       }
 
-      // Cập nhật dropdown tháng
       const monthSelect = document.getElementById('filterSummaryMonth');
       const curSelected = monthSelect.value;
       const uniqueMonths = [...new Set(rows.map((r) => r.month))];
@@ -1485,8 +1589,8 @@
             <td class="py-3.5 px-3 text-right font-extrabold text-slate-900">${formatMoney(r.grand)}</td>
             <td class="py-3.5 px-3 text-center">
               <div class="inline-flex items-center gap-1.5">
-                <button onclick="openMonthModal('${escapeHtml(r.key)}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px]">Sửa</button>
-                <button onclick="deleteMonthCost('${escapeHtml(r.key)}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px]">Xóa</button>
+                <button type="button" onclick="openMonthModal('${escapeHtml(r.key)}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px]">Sửa</button>
+                <button type="button" onclick="deleteMonthCost('${escapeHtml(r.key)}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px]">Xóa</button>
               </div>
             </td>
           </tr>
@@ -1503,8 +1607,8 @@
                 <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold ${badgeCls}">${escapeHtml(r.company)}</span>
               </div>
               <div class="flex items-center gap-1.5">
-                <button onclick="openMonthModal('${escapeHtml(r.key)}')" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Sửa</button>
-                <button onclick="deleteMonthCost('${escapeHtml(r.key)}')" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs">Xóa</button>
+                <button type="button" onclick="openMonthModal('${escapeHtml(r.key)}')" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Sửa</button>
+                <button type="button" onclick="deleteMonthCost('${escapeHtml(r.key)}')" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs">Xóa</button>
               </div>
             </div>
             <div class="grid grid-cols-2 gap-2.5 text-xs">
@@ -1621,7 +1725,6 @@
         delete appState.monthlyCosts[oldKey];
       }
 
-      // Gỡ khỏi danh sách đã xóa nếu người dùng chủ động tạo lại tháng này
       appState.deletedMonths = (appState.deletedMonths || []).filter((k) => k !== newKey && k !== month);
 
       appState.monthlyCosts[newKey] = {
@@ -1639,20 +1742,20 @@
       await persistState(`Cập nhật chi phí tháng ${month} (${company})`);
     }
 
-    async function deleteMonthCost(key) {
+    function deleteMonthCost(key) {
       const parts = key.split('_');
       const company = parts.length > 1 ? parts[0] : 'NAVI';
       const month = parts.length > 1 ? parts.slice(1).join('_') : key;
 
-      if (!confirm(`Bạn có chắc muốn xóa chi phí tháng ${month} (${company}) khỏi bảng tổng hợp?`)) return;
+      askConfirmDelete(`Bạn có chắc muốn xóa chi phí tháng ${month} (${company}) khỏi bảng tổng hợp?`, async () => {
+        delete appState.monthlyCosts[key];
+        delete appState.monthlyCosts[month];
 
-      delete appState.monthlyCosts[key];
-      delete appState.monthlyCosts[month];
+        if (!Array.isArray(appState.deletedMonths)) appState.deletedMonths = [];
+        if (!appState.deletedMonths.includes(key)) appState.deletedMonths.push(key);
 
-      if (!Array.isArray(appState.deletedMonths)) appState.deletedMonths = [];
-      if (!appState.deletedMonths.includes(key)) appState.deletedMonths.push(key);
-
-      await persistState(`Xóa chi phí tháng ${month} (${company})`);
+        await persistState(`Xóa chi phí tháng ${month} (${company})`);
+      });
     }
 
     // ==================== TAB 2 & TAB 1: NHÂN CÔNG THUÊ NGOÀI (GOM NHÓM THEO CÔNG TRÌNH + SỔ CHI TIẾT) ====================
@@ -1686,7 +1789,6 @@
       const scope = getAllowedCompanyScope();
       const scopedEntries = filterByUserCompany(appState.ncEntries || []);
 
-      // Cập nhật tiêu đề theo phạm vi tài khoản
       const subTitleEl = document.getElementById('ncSubListTitle');
       const tab2HeadingEl = document.getElementById('tab2Heading');
       if (subTitleEl) {
@@ -1700,7 +1802,6 @@
           : `Sổ Theo Dõi Nhân Công Thuê Ngoài (${scope})`;
       }
 
-      // 1. Render danh sách rút gọn tại Tab 1 (gom theo công trình)
       const subContainer = document.getElementById('ncSubListContainer');
       const subGroups = groupNcByProject(scopedEntries);
       if (!subGroups.length) {
@@ -1746,7 +1847,6 @@
         }).join('');
       }
 
-      // 2. Cập nhật bộ lọc Tab 2
       const monthFilterEl = document.getElementById('filterNcMonth');
       const curM = monthFilterEl.value;
       const ncMonths = [...new Set(scopedEntries.map((n) => n.month || extractMonthFromDate(n.date)))];
@@ -1759,7 +1859,6 @@
       taskFilterEl.innerHTML = `<option value="ALL">Tất cả loại công việc</option>` + tasks.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
       if (tasks.includes(curT)) taskFilterEl.value = curT;
 
-      // 3. Lọc danh sách Tab 2
       const selMonth = monthFilterEl.value;
       const selTask = taskFilterEl.value;
       const selStatus = document.getElementById('filterNcStatus').value;
@@ -1784,7 +1883,6 @@
         return;
       }
 
-      // Desktop rows (gom nhóm công trình + sổ chi tiết)
       tbody.innerHTML = groups.map((g) => {
         if (g.items.length === 1) {
           const it = g.items[0];
@@ -1801,19 +1899,18 @@
               <td class="py-3.5 px-3 text-right font-semibold text-rose-500">${formatMoney(it.mealDeduct)}</td>
               <td class="py-3.5 px-3 text-right font-extrabold text-blue-600">${formatMoney(net)}</td>
               <td class="py-3.5 px-3 text-center">
-                <button onclick="toggleNcStatus(${it.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${paid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
+                <button type="button" onclick="toggleNcStatus(${it.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${paid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
               </td>
               <td class="py-3.5 px-3 text-center">
                 <div class="inline-flex gap-1.5">
-                  <button onclick="openNcModal(${it.id})" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px]">Sửa</button>
-                  <button onclick="deleteNcEntry(${it.id})" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px]">Xóa</button>
+                  <button type="button" onclick="openNcModal(${it.id})" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px]">Sửa</button>
+                  <button type="button" onclick="deleteNcEntry(${it.id})" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px]">Xóa</button>
                 </div>
               </td>
             </tr>
           `;
         }
 
-        // Nhóm có nhiều công cùng công trình
         const isExpanded = !!expandedNcGroups[g.groupKey];
         const sumAmount = g.items.reduce((s, x) => s + parseVnNumber(x.amount), 0);
         const sumMeal = g.items.reduce((s, x) => s + parseVnNumber(x.mealDeduct), 0);
@@ -1859,12 +1956,12 @@
               <td class="py-2.5 px-3 text-right text-rose-500">${formatMoney(it.mealDeduct)}</td>
               <td class="py-2.5 px-3 text-right font-bold text-blue-600">${formatMoney(calcNcNet(it))}</td>
               <td class="py-2.5 px-3 text-center">
-                <button onclick="toggleNcStatus(${it.id})" class="px-2 py-0.5 rounded text-[11px] font-bold ${paid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
+                <button type="button" onclick="toggleNcStatus(${it.id})" class="px-2 py-0.5 rounded text-[11px] font-bold ${paid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
               </td>
               <td class="py-2.5 px-3 text-center">
                 <div class="inline-flex gap-1">
-                  <button onclick="openNcModal(${it.id})" class="px-2 py-1 rounded bg-white border border-slate-200 text-slate-700 font-bold text-[11px]">Sửa</button>
-                  <button onclick="deleteNcEntry(${it.id})" class="px-2 py-1 rounded bg-rose-50 text-rose-600 font-bold text-[11px]">Xóa</button>
+                  <button type="button" onclick="openNcModal(${it.id})" class="px-2 py-1 rounded bg-white border border-slate-200 text-slate-700 font-bold text-[11px]">Sửa</button>
+                  <button type="button" onclick="deleteNcEntry(${it.id})" class="px-2 py-1 rounded bg-rose-50 text-rose-600 font-bold text-[11px]">Xóa</button>
                 </div>
               </td>
             </tr>
@@ -1874,7 +1971,6 @@
         return headerRow + childRows;
       }).join('');
 
-      // Mobile cards (gom nhóm công trình + sổ chi tiết)
       mobileCards.innerHTML = groups.map((g) => {
         const sumNet = g.items.reduce((s, x) => s + calcNcNet(x), 0);
         const isExpanded = !!expandedNcGroups[g.groupKey];
@@ -1892,13 +1988,13 @@
                   <p class="text-sm font-extrabold text-slate-900 mt-1">${escapeHtml(it.project)}</p>
                   <p class="text-xs text-slate-600">${escapeHtml(it.worker)} • <span class="font-bold text-indigo-600">${escapeHtml(it.task)}</span></p>
                 </div>
-                <button onclick="toggleNcStatus(${it.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 ${paid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
+                <button type="button" onclick="toggleNcStatus(${it.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 ${paid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
               </div>
               <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                 <span class="text-sm font-extrabold text-blue-600">${formatMoney(sumNet)}</span>
                 <div class="flex gap-1.5">
-                  <button onclick="openNcModal(${it.id})" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Sửa</button>
-                  <button onclick="deleteNcEntry(${it.id})" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs">Xóa</button>
+                  <button type="button" onclick="openNcModal(${it.id})" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Sửa</button>
+                  <button type="button" onclick="deleteNcEntry(${it.id})" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs">Xóa</button>
                 </div>
               </div>
             </div>
@@ -1930,10 +2026,10 @@
                       <span class="font-extrabold text-blue-600">${formatMoney(calcNcNet(it))}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                      <button onclick="toggleNcStatus(${it.id})" class="px-2 py-0.5 rounded text-[11px] font-bold ${it.status === 'Đã thanh toán' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
+                      <button type="button" onclick="toggleNcStatus(${it.id})" class="px-2 py-0.5 rounded text-[11px] font-bold ${it.status === 'Đã thanh toán' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
                       <div class="flex gap-1.5">
-                        <button onclick="openNcModal(${it.id})" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-[11px]">Sửa</button>
-                        <button onclick="deleteNcEntry(${it.id})" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 font-bold text-[11px]">Xóa</button>
+                        <button type="button" onclick="openNcModal(${it.id})" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-[11px]">Sửa</button>
+                        <button type="button" onclick="deleteNcEntry(${it.id})" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 font-bold text-[11px]">Xóa</button>
                       </div>
                     </div>
                   </div>
@@ -2035,11 +2131,13 @@
       await persistState(`Đổi trạng thái NC (${found.worker}): ${found.status}`);
     }
 
-    async function deleteNcEntry(id) {
+    function deleteNcEntry(id) {
       const found = appState.ncEntries.find((n) => Number(n.id) === Number(id));
-      if (!found || !confirm(`Xóa dòng nhân công ${found.worker} (${found.date})?`)) return;
-      appState.ncEntries = appState.ncEntries.filter((n) => Number(n.id) !== Number(id));
-      await persistState(`Xóa NC thuê ngoài: ${found.worker} (${found.date})`);
+      if (!found) return;
+      askConfirmDelete(`Bạn có chắc muốn xóa dòng nhân công "${found.worker}" tại công trình "${found.project}" (${found.date})?`, async () => {
+        appState.ncEntries = appState.ncEntries.filter((n) => Number(n.id) !== Number(id));
+        await persistState(`Xóa NC thuê ngoài: ${found.worker} (${found.date})`);
+      });
     }
 
     // ==================== QUẢN LÝ LOẠI CÔNG VIỆC ====================
@@ -2095,12 +2193,14 @@
       await persistState(`Cập nhật loại công việc: ${name}`);
     }
 
-    async function deleteTaskType(idx) {
+    function deleteTaskType(idx) {
       const item = appState.taskTypes[idx];
-      if (!item || !confirm(`Xóa loại công việc "${item.name}"?`)) return;
-      appState.taskTypes.splice(idx, 1);
-      renderTaskTypesList();
-      await persistState(`Xóa loại công việc: ${item.name}`);
+      if (!item) return;
+      askConfirmDelete(`Xóa loại công việc "${item.name}" khỏi danh mục?`, async () => {
+        appState.taskTypes.splice(idx, 1);
+        renderTaskTypesList();
+        await persistState(`Xóa loại công việc: ${item.name}`);
+      });
     }
 
     // ==================== TAB 3 & TAB 1: HỖ TRỢ XE & NC 2 BÊN (GOM NHÓM THEO CÔNG TRÌNH + SỔ CHI TIẾT) ====================
@@ -2131,7 +2231,6 @@
     function renderXeTables() {
       const allXe = appState.xeEntries || [];
 
-      // 1. Render danh sách rút gọn tại Tab 1 (gom theo công trình)
       const subContainer = document.getElementById('xeSubListContainer');
       const subGroups = groupXeByProject(allXe);
       if (!subGroups.length) {
@@ -2173,7 +2272,6 @@
         }).join('');
       }
 
-      // 2. Lọc Tab 3
       const dirFilter = document.getElementById('filterXeDirection').value;
       const statusFilter = document.getElementById('filterXeStatus').value;
       const kw = (document.getElementById('searchXeInput').value || '').trim().toLowerCase();
@@ -2215,12 +2313,12 @@
               <td class="py-3.5 px-3 text-right font-semibold text-slate-600">${formatMoney(extra)}</td>
               <td class="py-3.5 px-3 text-right font-extrabold text-emerald-600">${formatMoney(total)}</td>
               <td class="py-3.5 px-3 text-center">
-                <button onclick="toggleXeStatus(${it.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${approved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
+                <button type="button" onclick="toggleXeStatus(${it.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${approved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
               </td>
               <td class="py-3.5 px-3 text-center">
                 <div class="inline-flex gap-1.5">
-                  <button onclick="openXeModal(${it.id})" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px]">Sửa</button>
-                  <button onclick="deleteXeEntry(${it.id})" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px]">Xóa</button>
+                  <button type="button" onclick="openXeModal(${it.id})" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px]">Sửa</button>
+                  <button type="button" onclick="deleteXeEntry(${it.id})" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px]">Xóa</button>
                 </div>
               </td>
             </tr>
@@ -2273,12 +2371,12 @@
               <td class="py-2.5 px-3 text-right">${formatMoney(extra)}</td>
               <td class="py-2.5 px-3 text-right font-bold text-emerald-600">${formatMoney(calcXeTotal(it))}</td>
               <td class="py-2.5 px-3 text-center">
-                <button onclick="toggleXeStatus(${it.id})" class="px-2 py-0.5 rounded text-[11px] font-bold ${approved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
+                <button type="button" onclick="toggleXeStatus(${it.id})" class="px-2 py-0.5 rounded text-[11px] font-bold ${approved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
               </td>
               <td class="py-2.5 px-3 text-center">
                 <div class="inline-flex gap-1">
-                  <button onclick="openXeModal(${it.id})" class="px-2 py-1 rounded bg-white border border-slate-200 text-slate-700 font-bold text-[11px]">Sửa</button>
-                  <button onclick="deleteXeEntry(${it.id})" class="px-2 py-1 rounded bg-rose-50 text-rose-600 font-bold text-[11px]">Xóa</button>
+                  <button type="button" onclick="openXeModal(${it.id})" class="px-2 py-1 rounded bg-white border border-slate-200 text-slate-700 font-bold text-[11px]">Sửa</button>
+                  <button type="button" onclick="deleteXeEntry(${it.id})" class="px-2 py-1 rounded bg-rose-50 text-rose-600 font-bold text-[11px]">Xóa</button>
                 </div>
               </td>
             </tr>
@@ -2302,13 +2400,13 @@
                   <p class="text-sm font-extrabold text-slate-900 mt-1">${escapeHtml(it.project)}</p>
                   <p class="text-xs text-slate-500">${escapeHtml(it.date)} • ${escapeHtml(it.assetName || '')}</p>
                 </div>
-                <button onclick="toggleXeStatus(${it.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 ${approved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
+                <button type="button" onclick="toggleXeStatus(${it.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 ${approved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
               </div>
               <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                 <span class="text-sm font-extrabold text-emerald-600">${formatMoney(sumTotal)}</span>
                 <div class="flex gap-1.5">
-                  <button onclick="openXeModal(${it.id})" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Sửa</button>
-                  <button onclick="deleteXeEntry(${it.id})" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs">Xóa</button>
+                  <button type="button" onclick="openXeModal(${it.id})" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Sửa</button>
+                  <button type="button" onclick="deleteXeEntry(${it.id})" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs">Xóa</button>
                 </div>
               </div>
             </div>
@@ -2338,10 +2436,10 @@
                     </div>
                     <p class="text-[11px] text-slate-500">${escapeHtml(it.assetName || '')}</p>
                     <div class="flex items-center justify-between">
-                      <button onclick="toggleXeStatus(${it.id})" class="px-2 py-0.5 rounded text-[11px] font-bold ${it.status === 'Đã đối soát duyệt' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
+                      <button type="button" onclick="toggleXeStatus(${it.id})" class="px-2 py-0.5 rounded text-[11px] font-bold ${it.status === 'Đã đối soát duyệt' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${escapeHtml(it.status)}</button>
                       <div class="flex gap-1.5">
-                        <button onclick="openXeModal(${it.id})" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-[11px]">Sửa</button>
-                        <button onclick="deleteXeEntry(${it.id})" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 font-bold text-[11px]">Xóa</button>
+                        <button type="button" onclick="openXeModal(${it.id})" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-[11px]">Sửa</button>
+                        <button type="button" onclick="deleteXeEntry(${it.id})" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 font-bold text-[11px]">Xóa</button>
                       </div>
                     </div>
                   </div>
@@ -2457,17 +2555,23 @@
       await persistState(`Đổi trạng thái hỗ trợ (${found.project}): ${found.status}`);
     }
 
-    async function deleteXeEntry(id) {
+    function deleteXeEntry(id) {
       const found = appState.xeEntries.find((x) => Number(x.id) === Number(id));
-      if (!found || !confirm(`Xóa phiếu hỗ trợ "${found.project}" (${found.date})?`)) return;
-      appState.xeEntries = appState.xeEntries.filter((x) => Number(x.id) !== Number(id));
-      await persistState(`Xóa phiếu hỗ trợ: ${found.project} (${found.date})`);
+      if (!found) return;
+      askConfirmDelete(`Bạn có chắc muốn xóa phiếu hỗ trợ "${found.project}" (${found.date})?`, async () => {
+        appState.xeEntries = appState.xeEntries.filter((x) => Number(x.id) !== Number(id));
+        await persistState(`Xóa phiếu hỗ trợ: ${found.project} (${found.date})`);
+      });
     }
 
     // ==================== TAB 4: DANH MỤC XE, BIỂN SỐ & TÀI SẢN ====================
     function renderAssetsTab() {
       const grid = document.getElementById('assetsGrid');
-      grid.innerHTML = (appState.assets || []).map((a) => `
+      if (!appState.assets || !appState.assets.length) {
+        grid.innerHTML = `<div class="col-span-full p-8 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl">Chưa có xe hoặc tài sản nào trong danh mục.</div>`;
+        return;
+      }
+      grid.innerHTML = appState.assets.map((a) => `
         <div class="p-4 rounded-2xl border border-slate-200/80 bg-white card-hover flex flex-col justify-between gap-3">
           <div>
             <div class="flex items-center justify-between gap-2 mb-2">
@@ -2478,8 +2582,8 @@
             <p class="text-xs text-slate-500 mt-1">Định mức: <strong class="text-blue-600">${formatMoney(a.rate)}</strong> / ${escapeHtml(a.unit)}</p>
           </div>
           <div class="pt-2.5 border-t border-slate-100 flex justify-end gap-1.5">
-            <button onclick="openAssetModal('${escapeHtml(a.id)}')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">Sửa</button>
-            <button onclick="deleteAssetItem('${escapeHtml(a.id)}')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs">Xóa</button>
+            <button type="button" onclick="openAssetModal('${escapeHtml(a.id)}')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">Sửa</button>
+            <button type="button" onclick="deleteAssetItem('${escapeHtml(a.id)}')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs">Xóa</button>
           </div>
         </div>
       `).join('');
@@ -2531,11 +2635,13 @@
       await persistState(`${editId ? 'Sửa' : 'Thêm'} xe/tài sản: ${payload.name} ${payload.plate ? '(' + payload.plate + ')' : ''}`);
     }
 
-    async function deleteAssetItem(id) {
+    function deleteAssetItem(id) {
       const found = appState.assets.find((a) => a.id === id);
-      if (!found || !confirm(`Xóa "${found.name}" khỏi danh mục?`)) return;
-      appState.assets = appState.assets.filter((a) => a.id !== id);
-      await persistState(`Xóa xe/tài sản: ${found.name}`);
+      if (!found) return;
+      askConfirmDelete(`Bạn có chắc muốn xóa "${found.name}" khỏi danh mục xe & tài sản?`, async () => {
+        appState.assets = appState.assets.filter((a) => a.id !== id);
+        await persistState(`Xóa xe/tài sản: ${found.name}`);
+      });
     }
 
     // ==================== TAB 5: BIÊN BẢN DUYỆT CHI (SỬA, XÓA, KÝ ĐIỆN TỬ & IN A4) ====================
@@ -2567,7 +2673,7 @@
                   </span>
                 </div>
                 <h3 class="text-sm sm:text-base font-extrabold text-slate-900 mt-1">${escapeHtml(v.title)}</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Đơn vị: <strong>${escapeHtml(v.company)}</strong> • Kỳ: <strong>${escapeHtml(v.month)}</strong> • Lập bởi: ${escapeHtml(v.createdBy || '')}</p>
+                <p class="text-xs text-slate-500 mt-0.5">Đơn vị: <strong>${escapeHtml(v.company)}</strong> • Kỳ: <strong>${escapeHtml(v.month)}</strong> • Lập bởi: ${escapeHtml(normalizeDisplayTitle(v.createdBy || '', ''))}</p>
               </div>
               <span class="px-3 py-1 rounded-full text-xs font-bold self-start ${isApproved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
                 ${isApproved ? 'Đã ký duyệt & Gạch nợ' : 'Chờ ký duyệt'}
@@ -2582,26 +2688,26 @@
             <div class="grid grid-cols-1 ${isInter ? 'sm:grid-cols-2' : ''} gap-3 text-xs">
               <div class="p-3 rounded-xl border border-slate-200/80">
                 <p class="text-slate-400 font-semibold">Chữ ký Bên A (${escapeHtml(v.company)}):</p>
-                <p class="font-extrabold text-slate-800 mt-1">${v.signA ? `✓ ${escapeHtml(v.signA)}` : 'Chưa ký'}</p>
+                <p class="font-extrabold text-slate-800 mt-1">${v.signA ? `✓ ${escapeHtml(normalizeDisplayTitle(v.signA, ''))}` : 'Chưa ký'}</p>
               </div>
               ${isInter ? `
                 <div class="p-3 rounded-xl border border-slate-200/80">
                   <p class="text-slate-400 font-semibold">Chữ ký Bên B (${v.company === 'NAVI' ? 'NVRC' : 'NAVI'}):</p>
-                  <p class="font-extrabold text-slate-800 mt-1">${v.signB ? `✓ ${escapeHtml(v.signB)}` : 'Chưa ký'}</p>
+                  <p class="font-extrabold text-slate-800 mt-1">${v.signB ? `✓ ${escapeHtml(normalizeDisplayTitle(v.signB, ''))}` : 'Chưa ký'}</p>
                 </div>
               ` : ''}
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-1.5">
-                <button onclick="openVoucherModal('${escapeHtml(v.id)}')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">Sửa</button>
-                <button onclick="deleteVoucher('${escapeHtml(v.id)}')" class="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs">Xóa</button>
+                <button type="button" onclick="openVoucherModal('${escapeHtml(v.id)}')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">Sửa</button>
+                <button type="button" onclick="deleteVoucher('${escapeHtml(v.id)}')" class="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs">Xóa</button>
               </div>
               <div class="flex flex-wrap items-center gap-2">
                 ${!isApproved ? `
-                  <button onclick="signVoucher('${escapeHtml(v.id)}')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm">Ký duyệt điện tử</button>
+                  <button type="button" onclick="signVoucher('${escapeHtml(v.id)}')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm">Ký duyệt điện tử</button>
                 ` : ''}
-                <button onclick="printVoucher('${escapeHtml(v.id)}')" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs">In A4</button>
+                <button type="button" onclick="printVoucher('${escapeHtml(v.id)}')" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs">In A4</button>
               </div>
             </div>
           </div>
@@ -2723,7 +2829,7 @@
         amount: parseVnNumber(document.getElementById('vAmount').value),
         note: document.getElementById('vNote').value.trim(),
         status: 'PENDING',
-        createdBy: currentUser ? currentUser.name : 'Kế toán',
+        createdBy: currentUser ? normalizeDisplayTitle(currentUser.name, currentUser.username) : 'Kế toán',
         createdAt: getNowStr(),
         signA: null,
         signB: null
@@ -2732,7 +2838,6 @@
       if (editId) {
         const idx = appState.vouchers.findIndex((v) => v.id === editId);
         if (idx >= 0) {
-          // Hoàn trạng thái khoản mục cũ trước khi cập nhật
           revertVoucherItemsStatus(appState.vouchers[idx]);
           appState.vouchers[idx] = payload;
         }
@@ -2757,18 +2862,21 @@
       });
     }
 
-    async function deleteVoucher(id) {
+    function deleteVoucher(id) {
       const found = appState.vouchers.find((v) => v.id === id);
-      if (!found || !confirm(`Xóa biên bản ${id} và hoàn trạng thái các khoản mục bên trong?`)) return;
-      revertVoucherItemsStatus(found);
-      appState.vouchers = appState.vouchers.filter((v) => v.id !== id);
-      await persistState(`Xóa biên bản duyệt chi ${id}`);
+      if (!found) return;
+      askConfirmDelete(`Bạn có chắc muốn xóa biên bản ${id} ("${found.title}") và hoàn trạng thái các khoản mục bên trong?`, async () => {
+        revertVoucherItemsStatus(found);
+        appState.vouchers = appState.vouchers.filter((v) => v.id !== id);
+        await persistState(`Xóa biên bản duyệt chi ${id}`);
+      });
     }
 
     async function signVoucher(id) {
       const v = appState.vouchers.find((x) => x.id === id);
       if (!v) return;
-      const sig = `${currentUser.name} (${getNowStr()})`;
+      const actorName = normalizeDisplayTitle(currentUser.name, currentUser.username);
+      const sig = `${actorName} (${getNowStr()})`;
 
       if (v.type === 'INTERNAL') {
         v.signA = sig;
@@ -2844,13 +2952,13 @@
             <div style="width:45%;">
               <strong>NGƯỜI LẬP BIỂU</strong><br/>
               <span style="font-size:12px;">(Ký, ghi rõ họ tên)</span><br/><br/><br/>
-              <strong>${escapeHtml(v.createdBy || '')}</strong>
+              <strong>${escapeHtml(normalizeDisplayTitle(v.createdBy || '', ''))}</strong>
             </div>
             <div style="width:45%;">
               <strong>PHÊ DUYỆT ĐƠN VỊ</strong><br/>
               <span style="font-size:12px;">(Xác nhận chữ ký điện tử)</span><br/><br/><br/>
-              <strong>${escapeHtml(v.signA || 'Chưa ký')}</strong>
-              ${v.signB ? `<br/><strong>Bên B: ${escapeHtml(v.signB)}</strong>` : ''}
+              <strong>${escapeHtml(normalizeDisplayTitle(v.signA || 'Chưa ký', 'Chưa ký'))}</strong>
+              ${v.signB ? `<br/><strong>Bên B: ${escapeHtml(normalizeDisplayTitle(v.signB, ''))}</strong>` : ''}
             </div>
           </div>
         </div>
@@ -2870,24 +2978,27 @@
       document.getElementById('sysSbRecord').value = cfg.recordId || 'nv_nvrc_main_v1';
 
       const grid = document.getElementById('usersGrid');
-      grid.innerHTML = (appState.users || []).map((u) => {
-        const roleTxt = u.role === 'ADMIN' ? 'Admin Tổng' : (u.role === 'MANAGER' ? 'Trưởng ĐV' : 'Kế toán');
-        const isSelf = currentUser && currentUser.username === u.username;
-        return `
-          <div class="p-4 rounded-2xl border border-slate-200/80 bg-white flex items-center justify-between gap-2">
-            <div class="min-w-0">
-              <p class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(u.name)}</p>
-              <p class="text-xs text-slate-500 mt-0.5">User: <strong>${escapeHtml(u.username)}</strong> • ĐV: <strong>${escapeHtml(u.company)}</strong> • ${roleTxt}</p>
+      grid.innerHTML = (appState.users || [])
+        .filter((u) => String(u.username || '').toLowerCase() !== 'admin2ben')
+        .map((u) => {
+          const roleTxt = u.role === 'ADMIN' ? 'Admin Tổng' : (u.role === 'MANAGER' ? 'Trưởng Đơn Vị' : 'Kế toán');
+          const isSelf = currentUser && currentUser.username === u.username;
+          const displayName = normalizeDisplayTitle(u.name, u.username);
+          return `
+            <div class="p-4 rounded-2xl border border-slate-200/80 bg-white flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <p class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(displayName)}</p>
+                <p class="text-xs text-slate-500 mt-0.5">User: <strong>${escapeHtml(u.username)}</strong> • ĐV: <strong>${escapeHtml(u.company)}</strong> • ${roleTxt}</p>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" onclick="openUserModal('${escapeHtml(u.username)}')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">Sửa</button>
+                ${!isSelf && u.username !== 'admin' ? `
+                  <button type="button" onclick="deleteUser('${escapeHtml(u.username)}')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs">Xóa</button>
+                ` : ''}
+              </div>
             </div>
-            <div class="flex items-center gap-1.5 shrink-0">
-              <button onclick="openUserModal('${escapeHtml(u.username)}')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">Sửa</button>
-              ${!isSelf && u.username !== 'admin2ben' ? `
-                <button onclick="deleteUser('${escapeHtml(u.username)}')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs">Xóa</button>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
+          `;
+        }).join('');
     }
 
     function openUserModal(editUsername = '') {
@@ -2896,7 +3007,7 @@
         if (found) {
           document.getElementById('userModalTitle').textContent = `Chỉnh Sửa Tài Khoản: ${found.username}`;
           document.getElementById('uEditUsername').value = found.username;
-          document.getElementById('uName').value = found.name || '';
+          document.getElementById('uName').value = normalizeDisplayTitle(found.name, found.username);
           document.getElementById('uUsername').value = found.username || '';
           document.getElementById('uPass').value = found.pass || '';
           document.getElementById('uCompany').value = found.company || 'NAVI';
@@ -2921,7 +3032,7 @@
       e.preventDefault();
       const oldUname = document.getElementById('uEditUsername').value;
       const payload = {
-        name: document.getElementById('uName').value.trim(),
+        name: normalizeDisplayTitle(document.getElementById('uName').value.trim(), ''),
         username: document.getElementById('uUsername').value.trim(),
         pass: document.getElementById('uPass').value.trim(),
         company: document.getElementById('uCompany').value,
@@ -2943,10 +3054,11 @@
       await persistState(`${oldUname ? 'Sửa' : 'Thêm'} tài khoản: ${payload.username} (${payload.company})`);
     }
 
-    async function deleteUser(username) {
-      if (!confirm(`Xóa tài khoản "${username}" khỏi hệ thống?`)) return;
-      appState.users = appState.users.filter((u) => u.username !== username);
-      await persistState(`Xóa tài khoản: ${username}`);
+    function deleteUser(username) {
+      askConfirmDelete(`Bạn có chắc muốn xóa tài khoản "${username}" khỏi hệ thống?`, async () => {
+        appState.users = appState.users.filter((u) => u.username !== username);
+        await persistState(`Xóa tài khoản: ${username}`);
+      });
     }
 
     function toggleSysKeyVisibility() {
@@ -2963,7 +3075,6 @@
       };
       saveCloudConfig(cfg);
       await manualSyncNow();
-      alert('Đã lưu cấu hình Supabase và đồng bộ dữ liệu!');
     }
 
     function openQuickCloudModal() {
@@ -3033,7 +3144,7 @@
       reader.onload = async (ev) => {
         try {
           const parsed = JSON.parse(ev.target.result);
-          normalizeState(parsed);
+          normalizeState(parsed, false);
           await persistState('Khôi phục dữ liệu từ file sao lưu JSON');
           alert('Khôi phục dữ liệu thành công!');
         } catch (err) {
@@ -3108,7 +3219,7 @@
       box.innerHTML = logs.map((l) => `
         <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center justify-between gap-3 text-xs">
           <div>
-            <span class="font-extrabold text-slate-900">${escapeHtml(l.actor)}:</span>
+            <span class="font-extrabold text-slate-900">${escapeHtml(normalizeDisplayTitle(l.actor, ''))}:</span>
             <span class="text-slate-600">${escapeHtml(l.action)}</span>
           </div>
           <span class="text-[11px] text-slate-400 shrink-0">${escapeHtml(l.time)}</span>
@@ -3130,10 +3241,10 @@
       loadLocalState();
       try {
         const savedSession = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-        if (savedSession && savedSession.username) {
+        if (savedSession && savedSession.username && savedSession.username !== 'admin2ben') {
           const valid = appState.users.find((u) => u.username === savedSession.username);
           if (valid) {
-            currentUser = valid;
+            currentUser = { ...valid, name: normalizeDisplayTitle(valid.name, valid.username) };
             enterMainApp();
           }
         }
