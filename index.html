@@ -1119,12 +1119,11 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
     // 3. DỮ LIỆU MẶC ĐỊNH (TOÀN BỘ NC THUÊ NGOÀI GÁN VỀ ĐƠN VỊ NAVI)
     // =========================================================================
     const DEFAULT_USERS = [
-      { id: 'u_admin', username: 'admin', password: '123', fullName: 'Admin Tổng (2 Bên)', company: 'BOTH', role: 'ADMIN' },
-      { id: 'u_admin2', username: 'admin2ben', password: '123', fullName: 'Quản Trị Hệ Thống 2 Bên', company: 'BOTH', role: 'ADMIN' },
-      { id: 'u_navi_tp', username: 'navi_tp', password: '123', fullName: 'Trưởng Đơn Vị NAVI', company: 'NAVI', role: 'MANAGER' },
-      { id: 'u_kt_navi', username: 'kt_navi', password: '123', fullName: 'Kế Toán NAVI', company: 'NAVI', role: 'ACCOUNTANT' },
-      { id: 'u_nvrc_tp', username: 'nvrc_tp', password: '123', fullName: 'Trưởng Đơn Vị NVRC', company: 'NVRC', role: 'MANAGER' },
-      { id: 'u_kt_nvrc', username: 'kt_nvrc', password: '123', fullName: 'Kế Toán NVRC', company: 'NVRC', role: 'ACCOUNTANT' }
+      { id: 'u_admin', username: 'admin', password: '1234', fullName: 'Quản Trị Hệ Thống 2 Bên', company: 'BOTH', role: 'ADMIN' },
+      { id: 'u_navi_tp', username: 'navi_tp', password: '1234', fullName: 'Trưởng Đơn Vị NAVI', company: 'NAVI', role: 'MANAGER' },
+      { id: 'u_kt_navi', username: 'kt_navi', password: '1234', fullName: 'Kế Toán NAVI', company: 'NAVI', role: 'ACCOUNTANT' },
+      { id: 'u_nvrc_tp', username: 'nvrc_tp', password: '1234', fullName: 'Trưởng Đơn Vị NVRC', company: 'NVRC', role: 'MANAGER' },
+      { id: 'u_kt_nvrc', username: 'kt_nvrc', password: '1234', fullName: 'Kế Toán NVRC', company: 'NVRC', role: 'ACCOUNTANT' }
     ];
 
     const DEFAULT_TASK_TYPES = [
@@ -1275,7 +1274,7 @@ CREATE POLICY "Allow all anon" ON public.nv_nvrc_app_state FOR ALL TO anon, auth
           ...u,
           id: u.id || ('u_' + (u.username || Math.random().toString(36).slice(2))),
           fullName: u.fullName || u.name || (fallback ? fallback.fullName : u.username || 'Người dùng'),
-          password: u.password || u.pin || '123',
+          password: u.password || u.pin || '1234',
           company: u.company || 'NAVI',
           role: u.role || 'ACCOUNTANT'
         };
